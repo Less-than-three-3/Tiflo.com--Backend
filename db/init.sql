@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS "user"
 
 CREATE TABLE IF NOT EXISTS project
 (
-    project_id   uuid
-        image_name text,
+    project_id   uuid,
+    image_name   text,
     user_id      uuid
         constraint user_id_fk
             references "user" (user_id),
