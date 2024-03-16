@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "pkg/grpc/generated";
+
+message TextToVoice {
+  string text = 1;
+}
+
+message Audio {
+    bytes audio = 1;
+}
+
+service AIService {
+  rpc VoiceTheText(TextToVoice) returns (Audio);
+}
