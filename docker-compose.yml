@@ -12,6 +12,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./configs/config.yml:/configs/config.yml
+      - ../../frontend/public/media:/media/
     restart: always
 
   postgres:

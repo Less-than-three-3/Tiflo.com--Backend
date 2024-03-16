@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const PathForMedia = "/home/ubuntu/frontend/public/media/"
+const PathForMedia = "/media/"
 
 type Handler struct {
 	logger       *logrus.Entry
@@ -102,5 +102,9 @@ func (h *Handler) GetVoicedText(context *gin.Context) {
 	}
 
 	context.Writer.Header().Set("Content-Type", "audio/wav")
-	context.Writer.Write(audioBytes)
+	_, err = context.Writer.Write(audioBytes)
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
 }
