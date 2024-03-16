@@ -53,7 +53,7 @@ func NewRepository(logger *logrus.Logger, db *pgxpool.Pool) Repository {
 }
 
 func (r *RepositoryPostgres) SaveImageProject(context context.Context, project model.ImageProject) error {
-	query := `INSERT INTO project(image_name, project_name, user_id, project_id) VALUES ($1, $2, $3, uuid.new());`
+	query := `INSERT INTO project(image_name, project_name, user_id, project_id) VALUES ($1, $2, $3, $4);`
 
 	project.UserId = GetUserId()
 	project.Name = "awesomeProject"
