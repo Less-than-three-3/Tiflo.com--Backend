@@ -17,11 +17,11 @@ type Handler struct {
 	repo         Repository
 }
 
-func NewHandler(logger *logrus.Logger, pythonClient client.AI, repo Repository) *Handler {
+func NewHandler(logger *logrus.Logger, repo Repository) *Handler {
 	return &Handler{
-		logger:       logger.WithField("component", "handler"),
-		pythonClient: pythonClient,
-		repo:         repo,
+		logger: logger.WithField("component", "handler"),
+		//pythonClient: pythonClient,
+		repo: repo,
 	}
 }
 

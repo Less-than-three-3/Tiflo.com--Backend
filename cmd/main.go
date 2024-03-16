@@ -3,14 +3,10 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"google.golang.org/grpc"
 	"log"
 	"path/filepath"
 	"strings"
 	"tiflo/internal"
-	pythonClient "tiflo/pkg/grpc/client"
-	pb "tiflo/pkg/grpc/generated"
-
 	"time"
 )
 
@@ -22,13 +18,13 @@ func main() {
 	}
 	logger.SetFormatter(formatter)
 
-	addr := "172.21.133.141:8080"
-	conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-	logger.Info("connected to python")
+	//addr := "172.21.133.141:8080"
+	//conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithBlock())
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//defer conn.Close()
+	//logger.Info("connected to python")
 
 	vp := viper.New()
 	if err := initConfig(vp, "/configs/config.yml"); err != nil {
@@ -39,10 +35,12 @@ func main() {
 	if err != nil {
 		log.Fatal("error during connecting to postgres ", err)
 	}
+	logger.Info("connected to postgres")
 
 	repos := internal.NewRepository(logger, db)
-	client := pb.NewAIServiceClient(conn)
-	handler := internal.NewHandler(logger, pythonClient.NewPythonClient(logger, client), repos)
+	// client := pb.NewAIServiceClient(conn)
+	//handler := internal.NewHandler(logger, pythonClient.NewPythonClient(logger, client), repos)
+	handler := internal.NewHandler(logger, repos)
 
 	r := handler.InitRouter()
 	r.Run("0.0.0.0:8080")
