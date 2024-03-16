@@ -9,7 +9,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const PathForMedia = "/media/"
+const (
+	PathForMedia = "/media/"
+	ImageUrl     = "/home/ubuntu/frontend/public/media/"
+)
 
 type Handler struct {
 	logger       *logrus.Entry
@@ -85,6 +88,7 @@ func (h *Handler) GetImageProject(context *gin.Context) {
 		context.String(500, err.Error())
 		return
 	}
+	project.Name = ImageUrl + project.Name
 	context.JSON(http.StatusOK, project)
 }
 
