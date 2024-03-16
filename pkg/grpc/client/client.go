@@ -33,7 +33,7 @@ func (p *PythonClient) VoiceTheText(context context.Context, text model.TextToVo
 	}
 	resp, err := p.client.VoiceTheText(context, &request)
 	if err != nil {
-		p.logger.Error("voice the text: ", resp)
+		p.logger.Error("voice the text: ", err)
 		return nil, err
 	}
 

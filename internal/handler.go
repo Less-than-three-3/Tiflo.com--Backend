@@ -9,15 +9,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const PathForMedia = "/home/ubuntu/frontend/public/media/"
+
 type Handler struct {
 	logger       *logrus.Entry
 	pythonClient client.AI
+	repo         Repository
 }
 
-func NewHandler(logger *logrus.Logger, pythonClient client.AI) *Handler {
+func NewHandler(logger *logrus.Logger, pythonClient client.AI, repo Repository) *Handler {
 	return &Handler{
 		logger:       logger.WithField("component", "handler"),
 		pythonClient: pythonClient,
+		repo:         repo,
 	}
 }
 
@@ -47,10 +51,41 @@ func (h *Handler) InitRouter() *gin.Engine {
 
 	apiGroup := r.Group("/api")
 	{
-		apiGroup.POST("/voice-to-text", h.GetVoicedText)
+		apiGroup.POST("/voice-the-text", h.GetVoicedText)
+		apiGroup.POST("/save-image", h.SaveImage)
+		apiGroup.GET("/get-image-project", h.GetImageProject)
 	}
 
 	return r
+}
+
+func (h *Handler) SaveImage(context *gin.Context) {
+	form, _ := context.MultipartForm()
+	files := form.File["file"]
+
+	for _, file := range files {
+		if err := context.SaveUploadedFile(file, PathForMedia+file.Filename); err != nil {
+			h.logger.Printf("Failed to save file: %s", err)
+			context.String(500, "Failed to save file")
+			return
+		}
+
+		if err := h.repo.SaveImageProject(context.Request.Context(), model.ImageProject{Image: file.Filename}); err != nil {
+			context.String(500, "Failed to save file")
+			return
+		}
+	}
+
+	context.String(200, "File uploaded successfully")
+}
+
+func (h *Handler) GetImageProject(context *gin.Context) {
+	project, err := h.repo.GetImageProject(context.Request.Context(), model.ImageProject{})
+	if err != nil {
+		context.String(500, err.Error())
+		return
+	}
+	context.JSON(http.StatusOK, project)
 }
 
 func (h *Handler) GetVoicedText(context *gin.Context) {
