@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"io/ioutil"
+	"log"
 	"net/http"
 	"tiflo/model"
 	"tiflo/pkg/grpc/client"
@@ -19,11 +21,11 @@ type Handler struct {
 	repo         Repository
 }
 
-func NewHandler(logger *logrus.Logger, repo Repository) *Handler {
+func NewHandler(logger *logrus.Logger, pythonClient client.AI, repo Repository) *Handler {
 	return &Handler{
-		logger: logger.WithField("component", "handler"),
-		//pythonClient: pythonClient,
-		repo: repo,
+		logger:       logger.WithField("component", "handler"),
+		pythonClient: pythonClient,
+		repo:         repo,
 	}
 }
 
@@ -93,6 +95,7 @@ func (h *Handler) GetImageProject(context *gin.Context) {
 
 func (h *Handler) GetVoicedText(context *gin.Context) {
 	var textComment model.TextToVoice
+	h.logger.Info(textComment)
 	if err := context.BindJSON(&textComment); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
@@ -102,6 +105,11 @@ func (h *Handler) GetVoicedText(context *gin.Context) {
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
+	}
+
+	err = ioutil.WriteFile("test.wav", audioBytes, 0644)
+	if err != nil {
+		log.Fatalf("Failed to write file: %s", err)
 	}
 
 	context.Writer.Header().Set("Content-Type", "audio/wav")
