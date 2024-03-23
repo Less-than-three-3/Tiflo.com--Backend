@@ -1,4 +1,4 @@
-package internal
+package handler
 
 import (
 	"errors"
@@ -7,10 +7,6 @@ import (
 	"net/http"
 	"strings"
 	"tiflo/model"
-)
-
-const (
-	userCtx = "UserId"
 )
 
 func (h *Handler) AuthCheck() gin.HandlerFunc {
@@ -48,7 +44,7 @@ func (h *Handler) AuthCheck() gin.HandlerFunc {
 			return
 		}
 
-		gCtx.Set(userCtx, userId)
+		gCtx.Set(model.UserCtx, userId)
 		gCtx.Next()
 	}
 }

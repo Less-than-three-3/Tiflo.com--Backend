@@ -2,12 +2,11 @@ package client
 
 import (
 	"context"
-	"tiflo/model"
-
-	"github.com/sirupsen/logrus"
 
 	"tiflo/pkg/grpc/generated"
 	pb "tiflo/pkg/grpc/generated"
+
+	"github.com/sirupsen/logrus"
 )
 
 type PythonClient struct {
@@ -16,7 +15,7 @@ type PythonClient struct {
 }
 
 type AI interface {
-	VoiceTheText(context context.Context, text model.TextToVoice) ([]byte, error)
+	VoiceTheText(context context.Context, text string) ([]byte, error)
 }
 
 func NewPythonClient(logger *logrus.Logger, client generated.AIServiceClient) *PythonClient {
@@ -26,10 +25,10 @@ func NewPythonClient(logger *logrus.Logger, client generated.AIServiceClient) *P
 	}
 }
 
-func (p *PythonClient) VoiceTheText(context context.Context, text model.TextToVoice) ([]byte, error) {
+func (p *PythonClient) VoiceTheText(context context.Context, text string) ([]byte, error) {
 	p.logger.Info("text: ", text)
 	request := pb.TextToVoice{
-		Text: text.Text,
+		Text: text,
 	}
 	resp, err := p.client.VoiceTheText(context, &request)
 	if err != nil {

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"tiflo/internal"
 	"time"
+
+	"tiflo/internal/handler"
 
 	"github.com/sirupsen/logrus"
 )
@@ -22,7 +23,7 @@ func main() {
 	}
 	logger.SetFormatter(formatter)
 
-	handler := internal.NewHandler(logger)
+	handler := handler.NewHandler(logger)
 	r := handler.InitRouter()
 	r.Run("0.0.0.0:8080")
 }

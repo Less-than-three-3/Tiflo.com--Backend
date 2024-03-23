@@ -11,7 +11,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ${CONFIG}:/configs/config.yml
+      - ${CONFIG}:/configs
       - ${MEDIA}:/media/
     restart: always
 
@@ -27,6 +27,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
+      -  ${PG_DATA}:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/initdb.sql
     restart: always
 
@@ -41,4 +42,4 @@ services:
         REDIS_PASSWORD: ${REDIS_PASSWORD}
         REDIS_DATABASES: 16
     volumes:
-      - redis-data:/data
+      - ${REDIS_DATA}:/data
