@@ -2,4 +2,16 @@ db:
   connection_string: "host=postgres port=5432 user= dbname= options='-c search_path=public' password= sslmode=disable"
 
 python:
-  address: "172.21.133.141:8080"
+  address: ""
+
+redis:
+  host: ""
+  port: ""
+  user: ""
+  password: ""
+  dialTimeout: "10s"
+  readTimeout: "10s"
+
+auth:
+  secret: ""
+  salt: ""

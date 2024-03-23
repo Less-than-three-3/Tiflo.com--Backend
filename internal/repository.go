@@ -2,7 +2,9 @@ package internal
 
 import (
 	"context"
-	"github.com/google/uuid"
+	"database/sql"
+	"errors"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 	"log"
@@ -10,23 +12,13 @@ import (
 )
 
 type Repository interface {
-	SaveImageProject(context context.Context, project model.ImageProject) error
-	GetImageProject(context context.Context, project model.ImageProject) (model.ImageProject, error)
+	CreateUser(context context.Context, newUser model.UserLogin) (model.User, error)
+	GetUser(context context.Context, user model.UserLogin) (model.User, error)
 }
 
 type RepositoryPostgres struct {
 	db     *pgxpool.Pool
 	logger *logrus.Entry
-}
-
-func GetProjectId() uuid.UUID {
-	uuid, _ := uuid.Parse("4b674f89-f2b5-4935-839f-8977ff76ee38")
-	return uuid
-}
-
-func GetUserId() uuid.UUID {
-	uuid, _ := uuid.Parse("3a964e4e-6a07-4730-b792-06b00c4284c3")
-	return uuid
 }
 
 func NewPostgresDB(str string) (*pgxpool.Pool, error) {
@@ -52,31 +44,67 @@ func NewRepository(logger *logrus.Logger, db *pgxpool.Pool) Repository {
 	}
 }
 
-func (r *RepositoryPostgres) SaveImageProject(context context.Context, project model.ImageProject) error {
-	query := `INSERT INTO project(image_name, project_name, user_id, project_id) VALUES ($1, $2, $3, $4) RETURNING project_id;`
-	var projectId uuid.UUID
+func (r *RepositoryPostgres) CreateUser(context context.Context, newUser model.UserLogin) (model.User, error) {
+	query := `INSERT INTO "users"(login, password) VALUES ($1, $2) RETURNING user_id;`
+	var newUserInfo = model.User{Login: newUser.Login}
 
-	project.UserId = GetUserId()
-	project.Name = "awesomeProject"
-	project.ProjectId = GetProjectId()
-	row := r.db.QueryRow(context, query, project.Image, project.Name, project.UserId, project.ProjectId)
-	if err := row.Scan(&projectId); err != nil {
+	row := r.db.QueryRow(context, query, newUser.Login, newUser.Password)
+	if err := row.Scan(&newUserInfo.UserId); err != nil {
 		r.logger.Error(err)
-		return err
+		if pqError, ok := err.(*pgconn.PgError); ok {
+			if pqError.Code == "23505" {
+				return model.User{}, model.Conflict
+			}
+		}
+
+		return model.User{}, err
 	}
 
-	return nil
+	return newUserInfo, nil
 }
 
-func (r *RepositoryPostgres) GetImageProject(context context.Context, project model.ImageProject) (model.ImageProject, error) {
-	var projectInfo model.ImageProject
-	query := `SELECT user_id, project_name, image_name, project_id FROM project WHERE project_id=$1;`
+func (r *RepositoryPostgres) GetUser(context context.Context, user model.UserLogin) (model.User, error) {
+	var userInfo model.User
+	query := `SELECT user_id, login FROM "users" WHERE login=$1 AND password=$2;`
 
-	row := r.db.QueryRow(context, query, GetProjectId())
-	if err := row.Scan(&projectInfo.UserId, &projectInfo.Name, &projectInfo.Image); err != nil {
+	row := r.db.QueryRow(context, query, user.Login, user.Password)
+	if err := row.Scan(&userInfo.UserId, userInfo.Login); err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return model.User{}, model.NotFound
+		}
 		r.logger.Error(err)
-		return model.ImageProject{}, err
+		return model.User{}, err
 	}
 
-	return projectInfo, nil
+	return userInfo, nil
 }
+
+//
+//func (r *RepositoryPostgres) SaveImageProject(context context.Context, project model.ImageProject) error {
+//	query := `INSERT INTO project(image_name, project_name, user_id, project_id) VALUES ($1, $2, $3, $4) RETURNING project_id;`
+//	var projectId uuid.UUID
+//
+//	project.UserId = GetUserId()
+//	project.Name = "awesomeProject"
+//	project.ProjectId = GetProjectId()
+//	row := r.db.QueryRow(context, query, project.Image, project.Name, project.UserId, project.ProjectId)
+//	if err := row.Scan(&projectId); err != nil {
+//		r.logger.Error(err)
+//		return err
+//	}
+//
+//	return nil
+//}
+
+//func (r *RepositoryPostgres) GetImageProject(context context.Context, project model.ImageProject) (model.ImageProject, error) {
+//	var projectInfo model.ImageProject
+//	query := `SELECT user_id, project_name, image_name, project_id FROM project WHERE project_id=$1;`
+//
+//	row := r.db.QueryRow(context, query, GetProjectId())
+//	if err := row.Scan(&projectInfo.UserId, &projectInfo.Name, &projectInfo.Image); err != nil {
+//		r.logger.Error(err)
+//		return model.ImageProject{}, err
+//	}
+//
+//	return projectInfo, nil
+//}

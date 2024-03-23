@@ -12,14 +12,19 @@ type AudioPart struct {
 }
 
 type Project struct {
-	ProjectId uuid.UUID `json:"projectId"`
-	Name      string    `json:"name"`
-	Path      string    `json:"path"`
-	UserId    uuid.UUID `json:"userId"`
+	ProjectId uuid.UUID `json:"projectId" binding:"required"`
+	Name      string    `json:"name" binding:"required"`
+	Path      string    `json:"path" binding:"required"`
+	UserId    uuid.UUID `json:"userId" binding:"required"`
 }
 
 type User struct {
 	UserId   uuid.UUID `json:"userId"`
 	Login    string    `json:"login"`
-	Password string    `json:"password"`
+	Password string    `json:"password" `
+}
+
+type UserLogin struct {
+	Login    string `json:"login" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
