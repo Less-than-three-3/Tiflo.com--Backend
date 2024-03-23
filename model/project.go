@@ -12,14 +12,8 @@ type AudioPart struct {
 }
 
 type Project struct {
-	ProjectId uuid.UUID `json:"projectId"`
-	Name      string    `json:"name"`
-	Path      string    `json:"path"`
-	UserId    uuid.UUID `json:"userId"`
-}
-
-type User struct {
-	UserId   uuid.UUID `json:"userId"`
-	Login    string    `json:"login"`
-	Password string    `json:"password"`
+	ProjectId uuid.UUID `json:"projectId" binding:"required"`
+	Name      string    `json:"name" binding:"required"`
+	Path      string    `json:"path" binding:"required"`
+	UserId    uuid.UUID `json:"userId" binding:"required"`
 }

@@ -1,5 +1,6 @@
 name: Backend
 
+
 on:
   push:
     branches: [ "main" ]
@@ -10,26 +11,31 @@ jobs:
   deploy:
     name: Tiflo--backend
     runs-on: ubuntu-latest
+    env:
+      HOST: ${{ secrets.HOST }}
+      KEY: ${{ secrets.PRIVATE_KEY }}
+      USER: ${{ secrets.USER }}
     steps:
       - name: Pull code
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ubuntu
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ env.HOST }}
+          username: ${{ env.USER }}
+          key: ${{ env.KEY }}
           script: cd /home/ubuntu/backend/Tiflo.com--Backend && git pull
       - name: Build containers
         uses: appleboy/ssh-action@master
         with:
           timeout: 10m
-          host: ${{ secrets.HOST }}
-          username: ubuntu
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ env.HOST }}
+          username: ${{ env.USER }}
+          key: ${{ env.KEY }}
           script: cd /home/ubuntu/backend/Tiflo.com--Backend && sudo docker compose build
       - name: Restart service
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ubuntu
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ env.HOST }}
+          username: ${{ env.USER }}
+          key: ${{ env.KEY }}
           script: cd /home/ubuntu/backend/Tiflo.com--Backend && sudo docker compose down && sudo docker compose up -d
+

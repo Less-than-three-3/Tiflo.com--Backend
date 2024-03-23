@@ -11,8 +11,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./configs/config.yml:/configs/config.yml
-      - ../../frontend/public/media:/media/
+      - ${CONFIG}:/configs
+      - ${MEDIA}:/media/
     restart: always
 
   postgres:
@@ -27,5 +27,19 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
+      -  ${PG_DATA}:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/initdb.sql
     restart: always
+
+  redis:
+    env_file:
+      - .env
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    environment:
+        REDIS_PASSWORD: ${REDIS_PASSWORD}
+        REDIS_DATABASES: 16
+    volumes:
+      - ${REDIS_DATA}:/data
