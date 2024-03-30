@@ -12,7 +12,7 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/api/logout": {
+        "/api/auth/logout": {
             "post": {
                 "description": "Logs out the user by blacklisting the access token",
                 "consumes": [
@@ -35,7 +35,7 @@
                 }
             }
         },
-        "/api/signIn": {
+        "/api/auth/signIn": {
             "post": {
                 "description": "Authenticates a user and generates an access token",
                 "consumes": [
@@ -82,7 +82,7 @@
                 }
             }
         },
-        "/api/signUp": {
+        "/api/auth/signUp": {
             "post": {
                 "description": "Creates a new user account",
                 "consumes": [

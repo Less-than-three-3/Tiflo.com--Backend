@@ -23,7 +23,7 @@ import (
 // @Failure      400  {object}  error
 // @Failure      401  {object}  error
 // @Failure      500  {object}  error
-// @Router       /api/signIn [post]
+// @Router       /api/auth/signIn [post]
 func (h *Handler) SignIn(context *gin.Context) {
 	var user model.UserLogin
 	var err error
@@ -70,7 +70,7 @@ func (h *Handler) SignIn(context *gin.Context) {
 // @Failure      400  {object}  error
 // @Failure      409  {object}  error
 // @Failure      500  {object}  error
-// @Router       /api/signUp [post]
+// @Router       /api/auth/signUp [post]
 func (h *Handler) SignUp(context *gin.Context) {
 	var newUser model.UserLogin
 	var err error
@@ -102,7 +102,7 @@ func (h *Handler) SignUp(context *gin.Context) {
 // @Produce      json
 // @Success      200
 // @Failure      400
-// @Router       /api/logout [post]
+// @Router       /api/auth/logout [post]
 func (h *Handler) Logout(context *gin.Context) {
 	jwtStr, err := context.Cookie("AccessToken")
 	if !strings.HasPrefix(jwtStr, model.JwtPrefix) || err != nil { // если нет префикса то нас дурят!

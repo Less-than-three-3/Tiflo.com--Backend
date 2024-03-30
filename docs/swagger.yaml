@@ -17,7 +17,7 @@ info:
   title: Tiflo_Backend
   version: "1.0"
 paths:
-  /api/logout:
+  /api/auth/logout:
     post:
       consumes:
       - application/json
@@ -32,7 +32,7 @@ paths:
       summary: Logout
       tags:
       - Authentication
-  /api/signIn:
+  /api/auth/signIn:
     post:
       consumes:
       - application/json
@@ -64,7 +64,7 @@ paths:
       summary: User sign-in
       tags:
       - Authentication
-  /api/signUp:
+  /api/auth/signUp:
     post:
       consumes:
       - application/json

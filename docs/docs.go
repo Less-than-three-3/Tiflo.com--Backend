@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/logout": {
+        "/api/auth/logout": {
             "post": {
                 "description": "Logs out the user by blacklisting the access token",
                 "consumes": [
@@ -38,7 +38,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/signIn": {
+        "/api/auth/signIn": {
             "post": {
                 "description": "Authenticates a user and generates an access token",
                 "consumes": [
@@ -85,7 +85,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/signUp": {
+        "/api/auth/signUp": {
             "post": {
                 "description": "Creates a new user account",
                 "consumes": [
