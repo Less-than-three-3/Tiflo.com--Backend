@@ -465,7 +465,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
 	BasePath:         "/",
-	Schemes:          []string{"http"},
+	Schemes:          []string{"http", "https"},
 	Title:            "Tiflo_Backend",
 	Description:      "App for working with audio descriptions(tiflocomments)",
 	InfoInstanceName: "swagger",
