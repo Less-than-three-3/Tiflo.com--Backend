@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS audio_part;
 
 CREATE TABLE IF NOT EXISTS "user"
 (
-    user_id       uuid        NOT NULL PRIMARY KEY,
+    user_id       uuid        NOT NULL PRIMARY KEY default gen_random_uuid(),
     login         varchar(40) NOT NULL
         constraint login_pk
             unique,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "user"
 
 CREATE TABLE IF NOT EXISTS project
 (
-    project_id uuid,
+    project_id uuid default gen_random_uuid(),
     path       TEXT,
     user_id    uuid
         constraint user_id_fk
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS project
 
 CREATE TABLE IF NOT EXISTS audio_part
 (
-    part_id    uuid NOT NULL PRIMARY KEY,
+    part_id    uuid NOT NULL PRIMARY KEY default gen_random_uuid(),
     project_id uuid
         constraint project_id_fk
             references project (project_id),
@@ -32,3 +32,25 @@ CREATE TABLE IF NOT EXISTS audio_part
     text       TEXT,
     path       TEXT
 );
+
+CREATE OR REPLACE FUNCTION increment_project_name()
+    RETURNS TRIGGER AS
+$$
+DECLARE
+    next_project_number INTEGER;
+BEGIN
+    SELECT COUNT(*) + 1
+    INTO next_project_number
+    FROM project
+    WHERE user_id = NEW.user_id;
+
+    NEW.project_name := 'awesomeProject' || next_project_number;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER increment_project_name_trigger
+    BEFORE INSERT
+    ON project
+    FOR EACH ROW
+EXECUTE FUNCTION increment_project_name();

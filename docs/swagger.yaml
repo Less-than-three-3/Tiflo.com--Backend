@@ -1,5 +1,28 @@
 basePath: /
 definitions:
+  handler.ProjectUpdate:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  model.Project:
+    properties:
+      name:
+        type: string
+      path:
+        type: string
+      projectId:
+        type: string
+      userId:
+        type: string
+    required:
+    - name
+    - path
+    - projectId
+    - userId
+    type: object
   model.UserLogin:
     properties:
       login:
@@ -96,6 +119,65 @@ paths:
       summary: Sign up a new user
       tags:
       - Authentication
+  /api/projects/:
+    post:
+      description: Create a  new project with default name
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Project'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create new user project
+      tags:
+      - Project
+  /api/projects/{projectId}:
+    patch:
+      consumes:
+      - application/json
+      description: rename project
+      parameters:
+      - description: New project name
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ProjectUpdate'
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update project name
+      tags:
+      - Project
 schemes:
 - http
 swagger: "2.0"

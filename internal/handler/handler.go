@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"tiflo/internal/repository"
 
 	_ "tiflo/docs"
-	"tiflo/internal"
 	"tiflo/pkg/auth"
 	"tiflo/pkg/grpc/client"
 	pythonClient "tiflo/pkg/grpc/client"
@@ -33,7 +33,7 @@ type Handler struct {
 	logger *logrus.Entry
 
 	redisClient redis.Client
-	repo        internal.Repository
+	repo        repository.Repository
 
 	hasher       hash.PasswordHasher
 	tokenManager auth.TokenManager
@@ -65,16 +65,16 @@ func NewHandler(logger *logrus.Logger) *Handler {
 
 	pythonNeeded, dbNeeded := parseFlags()
 
-	var repos internal.Repository
+	var repos repository.Repository
 
 	if *dbNeeded {
-		db, err := internal.NewPostgresDB(vp.GetString("db.connection_string"))
+		db, err := repository.NewPostgresDB(vp.GetString("db.connection_string"))
 		if err != nil {
 			log.Fatal("error during connecting to postgres ", err)
 		}
 		logger.Info("connected to postgres")
 
-		repos = internal.NewRepository(logger, db)
+		repos = repository.NewRepository(logger, db)
 	}
 
 	var pythonCl *pythonClient.PythonClient
@@ -151,8 +151,8 @@ func (h *Handler) InitRouter() *gin.Engine {
 
 		projectsRouter := apiGroup.Group("/projects")
 		{
-			projectsRouter.POST("/")
-			projectsRouter.POST("/")
+			projectsRouter.POST("/", h.CreateProject)
+			projectsRouter.PATCH("/:projectId/", h.UpdateProjectName)
 
 		}
 

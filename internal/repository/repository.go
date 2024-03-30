@@ -1,19 +1,25 @@
-package internal
+package repository
 
 import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
+
+	"tiflo/model"
+
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
-	"log"
-	"tiflo/model"
 )
 
 type Repository interface {
 	CreateUser(context context.Context, newUser model.UserLogin) (model.User, error)
 	GetUser(context context.Context, user model.UserLogin) (model.User, error)
+
+	CreateProject(context context.Context, userId uuid.UUID) (model.Project, error)
+	RenameProject(context context.Context, project model.Project) error
 }
 
 type RepositoryPostgres struct {
@@ -45,7 +51,7 @@ func NewRepository(logger *logrus.Logger, db *pgxpool.Pool) Repository {
 }
 
 func (r *RepositoryPostgres) CreateUser(context context.Context, newUser model.UserLogin) (model.User, error) {
-	query := `INSERT INTO "users"(login, password) VALUES ($1, $2) RETURNING user_id;`
+	query := `INSERT INTO "user"(login, password_hash) VALUES ($1, $2) RETURNING user_id;`
 	var newUserInfo = model.User{Login: newUser.Login}
 
 	row := r.db.QueryRow(context, query, newUser.Login, newUser.Password)
@@ -65,7 +71,7 @@ func (r *RepositoryPostgres) CreateUser(context context.Context, newUser model.U
 
 func (r *RepositoryPostgres) GetUser(context context.Context, user model.UserLogin) (model.User, error) {
 	var userInfo model.User
-	query := `SELECT user_id, login FROM "users" WHERE login=$1 AND password=$2;`
+	query := `SELECT user_id, login FROM "user" WHERE login=$1 AND password_hash=$2;`
 
 	row := r.db.QueryRow(context, query, user.Login, user.Password)
 	if err := row.Scan(&userInfo.UserId, userInfo.Login); err != nil {

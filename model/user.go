@@ -1,6 +1,10 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"errors"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+)
 
 const (
 	UserCtx = "UserId"
@@ -15,4 +19,13 @@ type User struct {
 type UserLogin struct {
 	Login    string `json:"login" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+func GetUserId(context *gin.Context) (uuid.UUID, error) {
+	userIdStr := context.GetString(UserCtx)
+	if userIdStr == "" {
+		return uuid.Nil, errors.New("no user id in context")
+	}
+
+	return uuid.Parse(userIdStr)
 }
