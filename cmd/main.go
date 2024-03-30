@@ -13,7 +13,7 @@ import (
 // @description App for working with audio descriptions(tiflocomments)
 
 // @host localhost:8080
-// @schemes http
+// @schemes http https
 // @BasePath /
 func main() {
 	logger := logrus.New()
