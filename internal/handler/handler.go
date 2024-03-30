@@ -25,10 +25,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	PathForMedia = "/media/"
-)
-
 type Handler struct {
 	logger *logrus.Entry
 
@@ -149,17 +145,18 @@ func (h *Handler) InitRouter() *gin.Engine {
 		routerWithAuthCheck := apiGroup.Group("/")
 		routerWithAuthCheck.Use(h.AuthCheck())
 
-		projectsRouter := apiGroup.Group("/projects")
+		projectsRouter := routerWithAuthCheck.Group("/projects")
 		{
 			projectsRouter.POST("/", h.CreateProject)
 			projectsRouter.PATCH("/:projectId/", h.UpdateProjectName)
+			projectsRouter.DELETE("/:projectId/", h.DeleteProject)
+			projectsRouter.GET("/:projectId/", h.GetProjectInfo)
 
+			projectsRouter.POST("/:projectId/media", h.UploadMedia)
+			//projectsRouter.POST("/:projectId/tifloComment/image", h.AddTifloCommentToImage)
 		}
 
 	}
-
-	//apiGroup.POST("/save-image", h.SaveImage)
-	//apiGroup.GET("/get-image-project", h.GetImageProject)
 
 	return r
 }

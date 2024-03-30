@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS "user";
-DROP TABLE IF EXISTS project;
 DROP TABLE IF EXISTS audio_part;
+DROP TABLE IF EXISTS project;
+DROP TABLE IF EXISTS "user";
 
 CREATE TABLE IF NOT EXISTS "user"
 (
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "user"
 
 CREATE TABLE IF NOT EXISTS project
 (
-    project_id uuid default gen_random_uuid(),
+    project_id uuid PRIMARY KEY default gen_random_uuid(),
     path       TEXT,
     user_id    uuid
         constraint user_id_fk
@@ -44,7 +44,7 @@ BEGIN
     FROM project
     WHERE user_id = NEW.user_id;
 
-    NEW.project_name := 'awesomeProject' || next_project_number;
+    NEW.name := 'awesomeProject' || next_project_number;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

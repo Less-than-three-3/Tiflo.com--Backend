@@ -7,8 +7,27 @@ definitions:
     required:
     - name
     type: object
+  model.AudioPart:
+    properties:
+      duration:
+        type: integer
+      partId:
+        type: string
+      path:
+        type: string
+      projectId:
+        type: string
+      start:
+        type: integer
+      text:
+        type: string
+    type: object
   model.Project:
     properties:
+      audioParts:
+        items:
+          $ref: '#/definitions/model.AudioPart'
+        type: array
       name:
         type: string
       path:
@@ -120,6 +139,29 @@ paths:
       tags:
       - Authentication
   /api/projects/:
+    get:
+      description: Get all user' projects as an array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Project'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all user' projects info
+      tags:
+      - Project
     post:
       description: Create a  new project with default name
       produces:
@@ -142,6 +184,61 @@ paths:
       tags:
       - Project
   /api/projects/{projectId}:
+    delete:
+      description: Delete project
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete project
+      tags:
+      - Project
+    get:
+      description: Get project name, path to media and audio parts
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Project'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get project info
+      tags:
+      - Project
     patch:
       consumes:
       - application/json
@@ -176,6 +273,38 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Update project name
+      tags:
+      - Project
+  /api/projects/{projectId}/media:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a media file to the server
+      parameters:
+      - description: Media file to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully uploaded
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to save file
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload media file for project
       tags:
       - Project
 schemes:

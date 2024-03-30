@@ -20,6 +20,11 @@ type Repository interface {
 
 	CreateProject(context context.Context, userId uuid.UUID) (model.Project, error)
 	RenameProject(context context.Context, project model.Project) error
+	DeleteProject(context context.Context, project model.Project) error
+	GetProject(context context.Context, project model.Project) (model.Project, error)
+	GetProjectsList(context context.Context, userId uuid.UUID) ([]model.Project, error)
+
+	UploadMedia(context context.Context, project model.Project) error
 }
 
 type RepositoryPostgres struct {
@@ -84,23 +89,6 @@ func (r *RepositoryPostgres) GetUser(context context.Context, user model.UserLog
 
 	return userInfo, nil
 }
-
-//
-//func (r *RepositoryPostgres) SaveImageProject(context context.Context, project model.ImageProject) error {
-//	query := `INSERT INTO project(image_name, project_name, user_id, project_id) VALUES ($1, $2, $3, $4) RETURNING project_id;`
-//	var projectId uuid.UUID
-//
-//	project.UserId = GetUserId()
-//	project.Name = "awesomeProject"
-//	project.ProjectId = GetProjectId()
-//	row := r.db.QueryRow(context, query, project.Image, project.Name, project.UserId, project.ProjectId)
-//	if err := row.Scan(&projectId); err != nil {
-//		r.logger.Error(err)
-//		return err
-//	}
-//
-//	return nil
-//}
 
 //func (r *RepositoryPostgres) GetImageProject(context context.Context, project model.ImageProject) (model.ImageProject, error) {
 //	var projectInfo model.ImageProject
