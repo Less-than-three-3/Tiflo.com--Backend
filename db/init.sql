@@ -4,11 +4,11 @@ DROP TABLE IF EXISTS "user";
 
 CREATE TABLE IF NOT EXISTS "user"
 (
-    user_id       uuid        NOT NULL PRIMARY KEY default gen_random_uuid(),
-    login         varchar(40) NOT NULL
+    user_id       uuid NOT NULL PRIMARY KEY default gen_random_uuid(),
+    login         text NOT NULL
         constraint login_pk
             unique,
-    password_hash varchar(64) NOT NULL
+    password_hash text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS project

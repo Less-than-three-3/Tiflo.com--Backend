@@ -12,7 +12,7 @@ import (
 // @version 1.0
 // @description App for working with audio descriptions(tiflocomments)
 
-// @host localhost:8080
+// @host tiflo.tech
 // @schemes http https
 // @BasePath /
 func main() {

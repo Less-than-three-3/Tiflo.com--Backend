@@ -79,7 +79,7 @@ func (r *RepositoryPostgres) GetUser(context context.Context, user model.UserLog
 	query := `SELECT user_id, login FROM "user" WHERE login=$1 AND password_hash=$2;`
 
 	row := r.db.QueryRow(context, query, user.Login, user.Password)
-	if err := row.Scan(&userInfo.UserId, userInfo.Login); err != nil {
+	if err := row.Scan(&userInfo.UserId, &userInfo.Login); err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
 			return model.User{}, model.NotFound
 		}
