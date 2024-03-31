@@ -52,7 +52,7 @@ definitions:
     - login
     - password
     type: object
-host: localhost:8080
+host: tiflo.tech
 info:
   contact: {}
   description: App for working with audio descriptions(tiflocomments)
