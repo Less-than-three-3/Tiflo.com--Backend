@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "pkg/grpc/generated";
+
+
+message Image {
+  string image_path = 1;
+}
+
+message Text {
+  string text = 1;
+}
+
+service ImageCaptioning {
+  rpc ImageCaption(Image) returns (Text);
+}

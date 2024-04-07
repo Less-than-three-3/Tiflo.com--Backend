@@ -328,6 +328,53 @@
                 }
             }
         },
+        "/api/projects/{projectId}/image/text": {
+            "post": {
+                "description": "Create tiflo comment for given image",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Create tiflo comment",
+                "parameters": [
+                    {
+                        "description": "text which you want to be voiced",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Image"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/media": {
             "post": {
                 "description": "Uploads a media file to the server",
@@ -454,6 +501,14 @@
                     "type": "integer"
                 },
                 "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Image": {
+            "type": "object",
+            "properties": {
+                "path": {
                     "type": "string"
                 }
             }

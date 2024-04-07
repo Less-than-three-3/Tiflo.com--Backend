@@ -2,7 +2,10 @@ db:
   connection_string: "host=postgres port=5432 user= dbname= options='-c search_path=public' password= sslmode=disable"
 
 python:
-  address: ""
+  voice2text:
+    address: ""
+  image2text:
+    address: ""
 
 redis:
   host: ""

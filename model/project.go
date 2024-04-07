@@ -22,3 +22,7 @@ type Project struct {
 type VoiceText struct {
 	Text string `json:"text"`
 }
+
+type Image struct {
+	Name string `json:"name"`
+}

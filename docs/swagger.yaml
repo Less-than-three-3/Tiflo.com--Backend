@@ -22,6 +22,11 @@ definitions:
       text:
         type: string
     type: object
+  model.Image:
+    properties:
+      path:
+        type: string
+    type: object
   model.Project:
     properties:
       audioParts:
@@ -278,6 +283,38 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Update project name
+      tags:
+      - Project
+  /api/projects/{projectId}/image/text:
+    post:
+      consumes:
+      - application/json
+      description: Create tiflo comment for given image
+      parameters:
+      - description: text which you want to be voiced
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.Image'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create tiflo comment
       tags:
       - Project
   /api/projects/{projectId}/media:

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: model.proto
+// source: voice2text.proto
 
 package generated
 
@@ -101,5 +101,5 @@ var AIService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "model.proto",
+	Metadata: "voice2text.proto",
 }

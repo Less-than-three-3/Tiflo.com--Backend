@@ -75,16 +75,27 @@ func NewHandler(logger *logrus.Logger) *Handler {
 
 	var pythonCl *pythonClient.PythonClient
 	if *pythonNeeded {
-		address := vp.GetString("python.address")
-		conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+		voice2textAddress := vp.GetString("python.voice2text.address")
+		conn, err := grpc.Dial(voice2textAddress, grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		logger.Info("connected to python")
+		logger.Info("connected to voice2text")
 
-		client := pb.NewAIServiceClient(conn)
-		pythonCl = pythonClient.NewPythonClient(logger, client)
+		voice2textClient := pb.NewAIServiceClient(conn)
+
+		image2textAddress := vp.GetString("python.image2text.address")
+		conn, err = grpc.Dial(image2textAddress, grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		logger.Info("connected to image2text")
+
+		image2textClient := pb.NewImageCaptioningClient(conn)
+
+		pythonCl = pythonClient.NewPythonClient(logger, voice2textClient, image2textClient)
 	}
 
 	tokenManager, err := auth.NewManager(vp.GetString("auth.secret"))
@@ -156,6 +167,7 @@ func (h *Handler) InitRouter() *gin.Engine {
 			//projectsRouter.POST("/:projectId/tifloComment/image", h.AddTifloCommentToImage)
 
 			projectsRouter.POST("/:projectId/voice", h.VoiceText)
+			projectsRouter.POST("/:projectId/image/text", h.ImageToText)
 		}
 
 	}

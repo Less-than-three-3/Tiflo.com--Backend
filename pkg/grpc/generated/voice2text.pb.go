@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v3.12.4
-// source: model.proto
+// source: voice2text.proto
 
 package generated
 
@@ -31,7 +31,7 @@ type TextToVoice struct {
 func (x *TextToVoice) Reset() {
 	*x = TextToVoice{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_model_proto_msgTypes[0]
+		mi := &file_voice2text_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -44,7 +44,7 @@ func (x *TextToVoice) String() string {
 func (*TextToVoice) ProtoMessage() {}
 
 func (x *TextToVoice) ProtoReflect() protoreflect.Message {
-	mi := &file_model_proto_msgTypes[0]
+	mi := &file_voice2text_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +57,7 @@ func (x *TextToVoice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextToVoice.ProtoReflect.Descriptor instead.
 func (*TextToVoice) Descriptor() ([]byte, []int) {
-	return file_model_proto_rawDescGZIP(), []int{0}
+	return file_voice2text_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *TextToVoice) GetText() string {
@@ -78,7 +78,7 @@ type Audio struct {
 func (x *Audio) Reset() {
 	*x = Audio{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_model_proto_msgTypes[1]
+		mi := &file_voice2text_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -91,7 +91,7 @@ func (x *Audio) String() string {
 func (*Audio) ProtoMessage() {}
 
 func (x *Audio) ProtoReflect() protoreflect.Message {
-	mi := &file_model_proto_msgTypes[1]
+	mi := &file_voice2text_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +104,7 @@ func (x *Audio) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Audio.ProtoReflect.Descriptor instead.
 func (*Audio) Descriptor() ([]byte, []int) {
-	return file_model_proto_rawDescGZIP(), []int{1}
+	return file_voice2text_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Audio) GetAudio() string {
@@ -114,40 +114,40 @@ func (x *Audio) GetAudio() string {
 	return ""
 }
 
-var File_model_proto protoreflect.FileDescriptor
+var File_voice2text_proto protoreflect.FileDescriptor
 
-var file_model_proto_rawDesc = []byte{
-	0x0a, 0x0b, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x02, 0x70,
-	0x62, 0x22, 0x21, 0x0a, 0x0b, 0x54, 0x65, 0x78, 0x74, 0x54, 0x6f, 0x56, 0x6f, 0x69, 0x63, 0x65,
-	0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
-	0x74, 0x65, 0x78, 0x74, 0x22, 0x1d, 0x0a, 0x05, 0x41, 0x75, 0x64, 0x69, 0x6f, 0x12, 0x14, 0x0a,
-	0x05, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x75,
-	0x64, 0x69, 0x6f, 0x32, 0x37, 0x0a, 0x09, 0x41, 0x49, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
-	0x12, 0x2a, 0x0a, 0x0c, 0x56, 0x6f, 0x69, 0x63, 0x65, 0x54, 0x68, 0x65, 0x54, 0x65, 0x78, 0x74,
-	0x12, 0x0f, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x65, 0x78, 0x74, 0x54, 0x6f, 0x56, 0x6f, 0x69, 0x63,
-	0x65, 0x1a, 0x09, 0x2e, 0x70, 0x62, 0x2e, 0x41, 0x75, 0x64, 0x69, 0x6f, 0x42, 0x14, 0x5a, 0x12,
-	0x70, 0x6b, 0x67, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74,
-	0x65, 0x64, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+var file_voice2text_proto_rawDesc = []byte{
+	0x0a, 0x10, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x32, 0x74, 0x65, 0x78, 0x74, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x12, 0x02, 0x70, 0x62, 0x22, 0x21, 0x0a, 0x0b, 0x54, 0x65, 0x78, 0x74, 0x54, 0x6f,
+	0x56, 0x6f, 0x69, 0x63, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x22, 0x1d, 0x0a, 0x05, 0x41, 0x75, 0x64,
+	0x69, 0x6f, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x32, 0x37, 0x0a, 0x09, 0x41, 0x49, 0x53, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x2a, 0x0a, 0x0c, 0x56, 0x6f, 0x69, 0x63, 0x65, 0x54, 0x68,
+	0x65, 0x54, 0x65, 0x78, 0x74, 0x12, 0x0f, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x65, 0x78, 0x74, 0x54,
+	0x6f, 0x56, 0x6f, 0x69, 0x63, 0x65, 0x1a, 0x09, 0x2e, 0x70, 0x62, 0x2e, 0x41, 0x75, 0x64, 0x69,
+	0x6f, 0x42, 0x14, 0x5a, 0x12, 0x70, 0x6b, 0x67, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65,
+	0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
-	file_model_proto_rawDescOnce sync.Once
-	file_model_proto_rawDescData = file_model_proto_rawDesc
+	file_voice2text_proto_rawDescOnce sync.Once
+	file_voice2text_proto_rawDescData = file_voice2text_proto_rawDesc
 )
 
-func file_model_proto_rawDescGZIP() []byte {
-	file_model_proto_rawDescOnce.Do(func() {
-		file_model_proto_rawDescData = protoimpl.X.CompressGZIP(file_model_proto_rawDescData)
+func file_voice2text_proto_rawDescGZIP() []byte {
+	file_voice2text_proto_rawDescOnce.Do(func() {
+		file_voice2text_proto_rawDescData = protoimpl.X.CompressGZIP(file_voice2text_proto_rawDescData)
 	})
-	return file_model_proto_rawDescData
+	return file_voice2text_proto_rawDescData
 }
 
-var file_model_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_model_proto_goTypes = []interface{}{
+var file_voice2text_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_voice2text_proto_goTypes = []interface{}{
 	(*TextToVoice)(nil), // 0: pb.TextToVoice
 	(*Audio)(nil),       // 1: pb.Audio
 }
-var file_model_proto_depIdxs = []int32{
+var file_voice2text_proto_depIdxs = []int32{
 	0, // 0: pb.AIService.VoiceTheText:input_type -> pb.TextToVoice
 	1, // 1: pb.AIService.VoiceTheText:output_type -> pb.Audio
 	1, // [1:2] is the sub-list for method output_type
@@ -157,13 +157,13 @@ var file_model_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_model_proto_init() }
-func file_model_proto_init() {
-	if File_model_proto != nil {
+func init() { file_voice2text_proto_init() }
+func file_voice2text_proto_init() {
+	if File_voice2text_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_model_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_voice2text_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TextToVoice); i {
 			case 0:
 				return &v.state
@@ -175,7 +175,7 @@ func file_model_proto_init() {
 				return nil
 			}
 		}
-		file_model_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_voice2text_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Audio); i {
 			case 0:
 				return &v.state
@@ -192,18 +192,18 @@ func file_model_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_model_proto_rawDesc,
+			RawDescriptor: file_voice2text_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_model_proto_goTypes,
-		DependencyIndexes: file_model_proto_depIdxs,
-		MessageInfos:      file_model_proto_msgTypes,
+		GoTypes:           file_voice2text_proto_goTypes,
+		DependencyIndexes: file_voice2text_proto_depIdxs,
+		MessageInfos:      file_voice2text_proto_msgTypes,
 	}.Build()
-	File_model_proto = out.File
-	file_model_proto_rawDesc = nil
-	file_model_proto_goTypes = nil
-	file_model_proto_depIdxs = nil
+	File_voice2text_proto = out.File
+	file_voice2text_proto_rawDesc = nil
+	file_voice2text_proto_goTypes = nil
+	file_voice2text_proto_depIdxs = nil
 }
