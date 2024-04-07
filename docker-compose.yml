@@ -52,7 +52,7 @@ services:
       - '80:80'
     volumes:
       - ${FRONT_BUILDS}/:/dist/
-      - ${FRONT_MEDIA}/:/
+      - ${FRONT_MEDIA}/:/Tiflo.com--Frontend/
       - /etc/letsencrypt/:/etc/letsencrypt/
       - ${NGINX_LOGS}/:/var/log/nginx/
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
