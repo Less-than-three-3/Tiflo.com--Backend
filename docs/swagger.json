@@ -10,7 +10,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "http://158.160.2.243:8080",
+    "host": "158.160.2.243:8080",
     "basePath": "/",
     "paths": {
         "/api/auth/logout": {
