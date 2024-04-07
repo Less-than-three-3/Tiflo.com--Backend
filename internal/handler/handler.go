@@ -80,7 +80,7 @@ func NewHandler(logger *logrus.Logger) *Handler {
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer conn.Close()
+
 		logger.Info("connected to python")
 
 		client := pb.NewAIServiceClient(conn)
