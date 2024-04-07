@@ -312,6 +312,38 @@ paths:
       summary: Upload media file for project
       tags:
       - Project
+  /api/projects/{projectId}/voice:
+    post:
+      consumes:
+      - application/json
+      description: Voice the given text
+      parameters:
+      - description: text which you want to be voiced
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.VoiceText'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Voice the given text
+      tags:
+      - Project
 schemes:
 - http
 - https

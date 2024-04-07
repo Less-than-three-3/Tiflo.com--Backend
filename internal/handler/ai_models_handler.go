@@ -7,17 +7,17 @@ import (
 )
 
 // VoiceText godoc
-// @Summary      User sign-in
+// @Summary      Voice the given text
 // @Description  Voice the given text
 // @Tags         Project
 // @Accept       json
 // @Produce      json
-// @Param        user  body  model.VoiceText  true  "test which you want to be voiced"
+// @Param        user  body  model.VoiceText  true  "text which you want to be voiced"
 // @Success      200  {object}  map[string]any
 // @Failure      400  {object}  error
 // @Failure      401  {object}  error
 // @Failure      500  {object}  error
-// @Router       /api/auth/signIn [post]
+// @Router       /api/projects/{projectId}/voice [post]
 func (h *Handler) VoiceText(context *gin.Context) {
 	var textComment model.VoiceText
 	h.logger.Info(textComment)
