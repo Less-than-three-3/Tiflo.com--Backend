@@ -143,7 +143,7 @@ func (h *Handler) InitRouter() *gin.Engine {
 		}
 
 		routerWithAuthCheck := apiGroup.Group("/")
-		routerWithAuthCheck.Use(h.AuthCheck())
+		//routerWithAuthCheck.Use(h.AuthCheck())
 
 		projectsRouter := routerWithAuthCheck.Group("/projects")
 		{
