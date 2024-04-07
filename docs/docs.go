@@ -345,7 +345,7 @@ const docTemplate = `{
                 "summary": "Create tiflo comment",
                 "parameters": [
                     {
-                        "description": "text which you want to be voiced",
+                        "description": "name of image(uuid)",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -510,7 +510,7 @@ const docTemplate = `{
         "model.Image": {
             "type": "object",
             "properties": {
-                "path": {
+                "name": {
                     "type": "string"
                 }
             }

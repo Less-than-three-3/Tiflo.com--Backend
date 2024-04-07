@@ -24,7 +24,7 @@ definitions:
     type: object
   model.Image:
     properties:
-      path:
+      name:
         type: string
     type: object
   model.Project:
@@ -291,7 +291,7 @@ paths:
       - application/json
       description: Create tiflo comment for given image
       parameters:
-      - description: text which you want to be voiced
+      - description: name of image(uuid)
         in: body
         name: user
         required: true
