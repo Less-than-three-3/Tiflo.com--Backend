@@ -456,6 +456,14 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.VoiceText": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            }
         }
     }
 }`

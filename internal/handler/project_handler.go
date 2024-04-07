@@ -242,30 +242,3 @@ func (h *Handler) GetProjects(context *gin.Context) {
 //
 //	context.JSON(http.StatusOK, "success")
 //}
-
-//func (h *Handler) GetVoicedText(context *gin.Context) {
-//	var textComment model.TextToVoice
-//	h.logger.Info(textComment)
-//	if err := context.BindJSON(&textComment); err != nil {
-//		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
-//		return
-//	}
-//
-//	audioBytes, err := h.pythonClient.VoiceTheText(context.Request.Context(), textComment)
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
-//		return
-//	}
-//
-//	err = ioutil.WriteFile("test.wav", audioBytes, 0644)
-//	if err != nil {
-//		log.Fatalf("Failed to write file: %s", err)
-//	}
-//
-//	context.Writer.Header().Set("Content-Type", "audio/wav")
-//	_, err = context.Writer.Write(audioBytes)
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
-//		return
-//	}
-//}

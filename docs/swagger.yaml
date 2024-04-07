@@ -52,6 +52,11 @@ definitions:
     - login
     - password
     type: object
+  model.VoiceText:
+    properties:
+      text:
+        type: string
+    type: object
 host: tiflo.tech
 info:
   contact: {}

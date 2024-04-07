@@ -18,3 +18,7 @@ type Project struct {
 	UserId     uuid.UUID   `json:"userId" binding:"required"`
 	AudioParts []AudioPart `json:"audioParts" binding:"omitempty"`
 }
+
+type VoiceText struct {
+	Text string `json:"text"`
+}

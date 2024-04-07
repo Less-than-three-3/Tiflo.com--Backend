@@ -154,6 +154,8 @@ func (h *Handler) InitRouter() *gin.Engine {
 
 			projectsRouter.POST("/:projectId/media", h.UploadMedia)
 			//projectsRouter.POST("/:projectId/tifloComment/image", h.AddTifloCommentToImage)
+
+			projectsRouter.POST("/:projectId/voice", h.VoiceText)
 		}
 
 	}

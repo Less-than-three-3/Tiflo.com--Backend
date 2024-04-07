@@ -15,7 +15,7 @@ type PythonClient struct {
 }
 
 type AI interface {
-	VoiceTheText(context context.Context, text string) ([]byte, error)
+	VoiceTheText(context context.Context, text string) (string, error)
 }
 
 func NewPythonClient(logger *logrus.Logger, client generated.AIServiceClient) *PythonClient {
@@ -25,7 +25,7 @@ func NewPythonClient(logger *logrus.Logger, client generated.AIServiceClient) *P
 	}
 }
 
-func (p *PythonClient) VoiceTheText(context context.Context, text string) ([]byte, error) {
+func (p *PythonClient) VoiceTheText(context context.Context, text string) (string, error) {
 	p.logger.Info("text: ", text)
 	request := pb.TextToVoice{
 		Text: text,
@@ -33,7 +33,7 @@ func (p *PythonClient) VoiceTheText(context context.Context, text string) ([]byt
 	resp, err := p.client.VoiceTheText(context, &request)
 	if err != nil {
 		p.logger.Error("voice the text: ", err)
-		return nil, err
+		return "", err
 	}
 
 	p.logger.Info("answer", resp.Audio)

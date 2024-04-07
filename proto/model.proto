@@ -9,7 +9,7 @@ message TextToVoice {
 }
 
 message Audio {
-    bytes audio = 1;
+  string audio = 1;
 }
 
 service AIService {
