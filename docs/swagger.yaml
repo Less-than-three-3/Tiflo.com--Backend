@@ -62,7 +62,7 @@ definitions:
       text:
         type: string
     type: object
-host: 158.160.2.243:8080
+host: tiflo.tech
 info:
   contact: {}
   description: App for working with audio descriptions(tiflocomments)
