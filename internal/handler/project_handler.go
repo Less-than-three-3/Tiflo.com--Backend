@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"net/http"
 	"os/exec"
+	"path/filepath"
 	"tiflo/model"
 
 	"github.com/gin-gonic/gin"
@@ -113,16 +114,36 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 	filename := uuid.New()
 
 	for _, file := range files {
-		if err = context.SaveUploadedFile(file, PathForMedia+filename.String()); err != nil {
+		extension := filepath.Ext(file.Filename)
+		if err = context.SaveUploadedFile(file, PathForMedia+filename.String()+"."+extension); err != nil {
 			h.logger.Printf("Failed to save file: %s", err)
 			context.String(http.StatusInternalServerError, "Failed to save file")
 			return
 		}
 
+		var audio []model.AudioPart
+
+		if extension == "mp4" {
+			_, err = exec.Command("ffmpeg", "-i", PathForMedia+filename.String()+"."+extension, "-vn", PathForMedia+filename.String()+".mp3").Output()
+			if err != nil {
+				fmt.Printf("error %s", err)
+			}
+
+			audio = append(audio, model.AudioPart{
+				PartId:    uuid.New(),
+				ProjectId: projectId,
+				Start:     0,
+				Duration:  0,
+				Text:      "",
+				Path:      PathForMedia + filename.String() + ".mp3",
+			})
+		}
+
 		if err = h.repo.UploadMedia(context.Request.Context(), model.Project{
-			ProjectId: projectId,
-			Path:      filename.String(),
-			UserId:    userId,
+			ProjectId:  projectId,
+			Path:       filename.String() + "." + extension,
+			UserId:     userId,
+			AudioParts: audio,
 		}); err != nil {
 			context.String(http.StatusInternalServerError, "Failed to save file")
 			return
@@ -246,9 +267,5 @@ func (h *Handler) GetProjects(context *gin.Context) {
 //}
 
 func (h *Handler) f(context *gin.Context) {
-	_, err := exec.Command("ffmpeg", "-i", "video.mp4", "-vn", "sound.mp3").Output()
-	if err != nil {
-		fmt.Printf("error %s", err)
-	}
 
 }
