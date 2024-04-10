@@ -15,7 +15,7 @@ func (r *RepositoryPostgres) CreateProject(context context.Context, userId uuid.
 	var newProject model.Project
 
 	row := r.db.QueryRow(context, query, userId)
-	if err := row.Scan(&newProject.ProjectId, newProject.Name, newProject.UserId); err != nil {
+	if err := row.Scan(&newProject.ProjectId, &newProject.Name, &newProject.UserId); err != nil {
 		r.logger.Error(err)
 		return model.Project{}, err
 	}
