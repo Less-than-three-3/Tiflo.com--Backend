@@ -23,8 +23,12 @@ type UserLogin struct {
 }
 
 func GetUserId(context *gin.Context) (uuid.UUID, error) {
-	userId, exists := context.Get(UserCtx)
-	if !exists {
+	userId := context.GetString(UserCtx)
+	fmt.Println(userId)
+
+	fmt.Println(context)
+
+	if userId == "" {
 		return uuid.Nil, errors.New("no user id in context")
 	}
 
