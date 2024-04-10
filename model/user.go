@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -22,10 +23,11 @@ type UserLogin struct {
 }
 
 func GetUserId(context *gin.Context) (uuid.UUID, error) {
-	userIdStr, exists := context.Get(UserCtx)
-	if !exists || userIdStr == "" {
+	userId, exists := context.Get(UserCtx)
+	if !exists {
 		return uuid.Nil, errors.New("no user id in context")
 	}
 
-	return uuid.Parse(userIdStr.(string))
+	userIdStr := fmt.Sprintf("%v", userId)
+	return uuid.Parse(userIdStr)
 }
