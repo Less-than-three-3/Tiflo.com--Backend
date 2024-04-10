@@ -44,7 +44,7 @@ func (h *Handler) AuthCheck() gin.HandlerFunc {
 			return
 		}
 
-		gCtx.Set(model.UserCtx, userId)
+		gCtx.Set(model.UserCtx, userId.String())
 		gCtx.Next()
 	}
 }

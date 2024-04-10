@@ -53,6 +53,7 @@ services:
     volumes:
       - ${FRONT_BUILDS}/:/dist/
       - ${FRONT_MEDIA}/:/Tiflo.com--Frontend/
+      - ${FRONT_REPO}/src/assets:/icons/src/assets
       - /etc/letsencrypt/:/etc/letsencrypt/
       - ${NGINX_LOGS}/:/var/log/nginx/
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
