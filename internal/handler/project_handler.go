@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"net/http"
+	"os/exec"
 	"tiflo/model"
 
 	"github.com/gin-gonic/gin"
@@ -242,3 +244,11 @@ func (h *Handler) GetProjects(context *gin.Context) {
 //
 //	context.JSON(http.StatusOK, "success")
 //}
+
+func (h *Handler) f(context *gin.Context) {
+	_, err := exec.Command("ffmpeg", "-i", "video.mp4", "-vn", "sound.mp3").Output()
+	if err != nil {
+		fmt.Printf("error %s", err)
+	}
+
+}
