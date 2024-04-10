@@ -22,10 +22,10 @@ type UserLogin struct {
 }
 
 func GetUserId(context *gin.Context) (uuid.UUID, error) {
-	userIdStr := context.GetString(UserCtx)
-	if userIdStr == "" {
+	userIdStr, exists := context.Get(UserCtx)
+	if !exists || userIdStr == "" {
 		return uuid.Nil, errors.New("no user id in context")
 	}
 
-	return uuid.Parse(userIdStr)
+	return uuid.Parse(userIdStr.(string))
 }
