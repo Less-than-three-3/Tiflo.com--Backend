@@ -37,10 +37,11 @@ func (r *RepositoryPostgres) RenameProject(context context.Context, project mode
 }
 
 func (r *RepositoryPostgres) UploadMedia(context context.Context, project model.Project) error {
-	query := `UPDATE "project" SET path=$1 WHERE user_id=$2 AND project_id=$3;`
+	query := `UPDATE "project" SET path=$1 WHERE user_id=$2 AND project_id=$3 RETURNING path;`
 
+	var path string
 	row := r.db.QueryRow(context, query, project.Path, project.UserId, project.ProjectId)
-	if err := row.Scan(); err != nil && !errors.Is(sql.ErrNoRows, err) {
+	if err := row.Scan(&path); err != nil {
 		r.logger.Error(err)
 		return err
 	}
