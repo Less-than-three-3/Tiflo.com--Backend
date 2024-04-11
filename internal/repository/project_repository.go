@@ -84,12 +84,14 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 	}
 	defer rows.Close()
 
+	var projectPath sql.NullString
 	for rows.Next() {
 		var ap model.AudioPart
-		err = rows.Scan(&project.Name, &project.Path, &ap.PartId, &ap.Start, &ap.Duration, &ap.Text, &ap.Path)
+		err = rows.Scan(&project.Name, &projectPath, &ap.PartId, &ap.Start, &ap.Duration, &ap.Text, &ap.Path)
 		if err != nil {
 			return model.Project{}, err
 		}
+		project.Path = projectPath.String
 		project.AudioParts = append(project.AudioParts, ap)
 	}
 
@@ -129,13 +131,14 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 	projects := map[uuid.UUID]model.Project{}
 	for rows.Next() {
 		var projectId uuid.UUID
-		var name, path string
+		var name string
 		var userId uuid.UUID
 		var partId uuid.UUID
 		var start, duration int64
 		var text, partPath string
+		var projectPath sql.NullString
 
-		err = rows.Scan(&projectId, &name, &path, &userId, &partId, &start, &duration, &text, &partPath)
+		err = rows.Scan(&projectId, &name, &projectPath, &userId, &partId, &start, &duration, &text, &partPath)
 		if err != nil {
 			return nil, err
 		}
@@ -145,7 +148,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 			project = model.Project{
 				ProjectId:  projectId,
 				Name:       name,
-				Path:       path,
+				Path:       projectPath.String,
 				UserId:     userId,
 				AudioParts: []model.AudioPart{},
 			}

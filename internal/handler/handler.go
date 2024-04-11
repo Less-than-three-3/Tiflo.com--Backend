@@ -159,6 +159,7 @@ func (h *Handler) InitRouter() *gin.Engine {
 		projectsRouter := routerWithAuthCheck.Group("/projects")
 		{
 			projectsRouter.POST("/", h.CreateProject)
+			projectsRouter.GET("/", h.GetProjects)
 			projectsRouter.PATCH("/:projectId/", h.UpdateProjectName)
 			projectsRouter.DELETE("/:projectId/", h.DeleteProject)
 			projectsRouter.GET("/:projectId/", h.GetProjectInfo)
