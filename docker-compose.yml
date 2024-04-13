@@ -12,7 +12,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ${CONFIG}:/configs
-      - ${MEDIA}:/media/
+      - ${MEDIA}:/media
     restart: always
 
   postgres:
@@ -56,3 +56,4 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
       - ${NGINX_LOGS}:/var/log/nginx
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ${MEDIA}:/media
