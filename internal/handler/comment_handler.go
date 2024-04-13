@@ -78,11 +78,11 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	// split
 	// get first part
 	firstPartName := uuid.New()
-	fmt.Println("ffmpeg", "-i", PathForMedia+project.AudioPath, "-vn", "-acodec", "copy",
+	fmt.Println("ffmpeg", "-i", project.AudioPath, "-vn", "-acodec", "copy",
 		"-ss", "00:00:00", "-t", fmt.Sprintf("%02d:%02d:%02d", int(duration.Hours()), int(duration.Minutes())%60, int(duration.Seconds())%60),
 		firstPartName.String()+".mp3")
 
-	_, err = exec.Command("ffmpeg", "-i", PathForMedia+project.AudioPath, "-vn", "-acodec", "copy",
+	_, err = exec.Command("ffmpeg", "-i", project.AudioPath, "-vn", "-acodec", "copy",
 		"-ss", "00:00:00", "-t", fmt.Sprintf("%02d:%02d:%02d", int(duration.Hours()), int(duration.Minutes())%60, int(duration.Seconds())%60),
 		firstPartName.String()+".mp3").Output()
 	if err != nil {
@@ -94,10 +94,10 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	secondPartName := uuid.New()
 	formattedDuration := fmt.Sprintf("%02d:%02d:%02d", int(duration.Hours()), int(duration.Minutes())%60, int(duration.Seconds())%60+int(h.convertTime(comment.Start)))
 
-	fmt.Println("ffmpeg", "-i", PathForMedia+project.AudioPath, "-vn", "-acodec", "copy",
+	fmt.Println("ffmpeg", "-i", project.AudioPath, "-vn", "-acodec", "copy",
 		"-ss", formattedDuration, secondPartName.String()+".mp3")
 
-	_, err = exec.Command("ffmpeg", "-i", PathForMedia+project.AudioPath, "-vn", "-acodec", "copy",
+	_, err = exec.Command("ffmpeg", "-i", project.AudioPath, "-vn", "-acodec", "copy",
 		"-ss", formattedDuration, secondPartName.String()+".mp3").Output()
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
