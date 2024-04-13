@@ -6,5 +6,7 @@ RUN go build -o tiflo_api cmd/main.go
 FROM ubuntu:23.04 as run_stage
 WORKDIR /out
 COPY --from=builder /app/tiflo_api ./binary
-RUN apt install ffmpeg
+RUN apt update && \
+    apt install -y ffmpeg && \
+    apt clean
 CMD ["./binary", "-python=false"]
