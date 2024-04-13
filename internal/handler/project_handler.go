@@ -115,7 +115,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 
 	for _, file := range files {
 		extension := filepath.Ext(file.Filename)
-		if err = context.SaveUploadedFile(file, PathForMedia+filename.String()+"."+extension); err != nil {
+		if err = context.SaveUploadedFile(file, PathForMedia+filename.String()+extension); err != nil {
 			h.logger.Printf("Failed to save file: %s", err)
 			context.String(http.StatusInternalServerError, "Failed to save file")
 			return
@@ -124,7 +124,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 		var audio []model.AudioPart
 
 		if extension == "mp4" {
-			_, err = exec.Command("ffmpeg", "-i", PathForMedia+filename.String()+"."+extension, "-vn", PathForMedia+filename.String()+".mp3").Output()
+			_, err = exec.Command("ffmpeg", "-i", PathForMedia+filename.String()+extension, "-vn", PathForMedia+filename.String()+".mp3").Output()
 			if err != nil {
 				fmt.Printf("error %s", err)
 			}
@@ -141,7 +141,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 
 		if err = h.repo.UploadMedia(context.Request.Context(), model.Project{
 			ProjectId:  projectId,
-			Path:       filename.String() + "." + extension,
+			Path:       filename.String() + extension,
 			UserId:     userId,
 			AudioParts: audio,
 		}); err != nil {
