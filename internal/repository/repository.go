@@ -25,6 +25,8 @@ type Repository interface {
 	GetProjectsList(context context.Context, userId uuid.UUID) ([]model.Project, error)
 
 	UploadMedia(context context.Context, project model.Project) error
+
+	AddAudioPart(context context.Context, part model.AudioPart) error
 }
 
 type RepositoryPostgres struct {

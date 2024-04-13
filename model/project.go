@@ -14,7 +14,8 @@ type AudioPart struct {
 type Project struct {
 	ProjectId  uuid.UUID   `json:"projectId" binding:"required"`
 	Name       string      `json:"name" binding:"required"`
-	Path       string      `json:"path" binding:"required"`
+	VideoPath  string      `json:"path" binding:"required"`
+	AudioPath  string      `json:"-"`
 	UserId     uuid.UUID   `json:"userId" binding:"required"`
 	AudioParts []AudioPart `json:"audioParts" binding:"omitempty"`
 }

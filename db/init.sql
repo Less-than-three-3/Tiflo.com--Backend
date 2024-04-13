@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS "user"
 CREATE TABLE IF NOT EXISTS project
 (
     project_id uuid PRIMARY KEY default gen_random_uuid(),
-    path       TEXT,
+    video_path       TEXT,
+    audio_path       TEXT,
     user_id    uuid
         constraint user_id_fk
             references "user" (user_id),

@@ -37,10 +37,10 @@ func (r *RepositoryPostgres) RenameProject(context context.Context, project mode
 }
 
 func (r *RepositoryPostgres) UploadMedia(context context.Context, project model.Project) error {
-	query := `UPDATE "project" SET path=$1 WHERE user_id=$2 AND project_id=$3 RETURNING path;`
+	query := `UPDATE "project" SET video_path=$1, audio_path=$2 WHERE user_id=$3 AND project_id=$4 RETURNING video_path;`
 
 	var path string
-	row := r.db.QueryRow(context, query, project.Path, project.UserId, project.ProjectId)
+	row := r.db.QueryRow(context, query, project.VideoPath, project.AudioPath, project.UserId, project.ProjectId)
 	if err := row.Scan(&path); err != nil {
 		r.logger.Error(err)
 		return err
@@ -54,7 +54,18 @@ func (r *RepositoryPostgres) UploadMedia(context context.Context, project model.
 			r.logger.Error(err)
 			return err
 		}
+	}
 
+	return nil
+}
+
+func (r *RepositoryPostgres) AddAudioPart(context context.Context, part model.AudioPart) error {
+	var projectId uuid.UUID
+	query := `INSERT INTO "audio_part"(part_id, project_id, start, text, path) VALUES ($1, $2, $3, $4, $5) RETURNING project_id;`
+	row := r.db.QueryRow(context, query, part.PartId, part.ProjectId, part.Start, part.Text, part.Path)
+	if err := row.Scan(&projectId); err != nil {
+		r.logger.Error(err)
+		return err
 	}
 
 	return nil
@@ -76,7 +87,8 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 	query := `
 	SELECT 
 		p.name,
-		p.path,
+		p.video_path,
+		p.audio_path,
 		ap.part_id,
 		ap.start,
 		ap.duration,
@@ -96,17 +108,18 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 	}
 	defer rows.Close()
 
-	var projectPath sql.NullString
+	var projectVideoPath, projectAudioPath sql.NullString
 	for rows.Next() {
 		var ap model.AudioPart
 		var audioPath, audioText sql.NullString
 		var duration, start sql.NullInt64
 
-		err = rows.Scan(&project.Name, &projectPath, &ap.PartId, &start, &duration, &audioText, &audioPath)
+		err = rows.Scan(&project.Name, &projectVideoPath, &projectAudioPath, &ap.PartId, &start, &duration, &audioText, &audioPath)
 		if err != nil {
 			return model.Project{}, err
 		}
-		project.Path = projectPath.String
+		project.VideoPath = projectVideoPath.String
+		project.AudioPath = projectAudioPath.String
 		ap.Path = audioPath.String
 		ap.Start = start.Int64
 		ap.Duration = duration.Int64
@@ -170,7 +183,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 			project = model.Project{
 				ProjectId:  projectId,
 				Name:       name,
-				Path:       projectPath.String,
+				VideoPath:  projectPath.String,
 				UserId:     userId,
 				AudioParts: []model.AudioPart{},
 			}
