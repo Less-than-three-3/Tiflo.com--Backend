@@ -26,7 +26,7 @@ type Repository interface {
 
 	UploadMedia(context context.Context, project model.Project) error
 
-	AddAudioPart(context context.Context, part model.AudioPart) error
+	SaveProjectAudio(context context.Context, project model.Project) error
 }
 
 type RepositoryPostgres struct {

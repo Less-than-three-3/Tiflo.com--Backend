@@ -59,13 +59,22 @@ func (r *RepositoryPostgres) UploadMedia(context context.Context, project model.
 	return nil
 }
 
-func (r *RepositoryPostgres) AddAudioPart(context context.Context, part model.AudioPart) error {
+func (r *RepositoryPostgres) SaveProjectAudio(context context.Context, project model.Project) error {
 	var projectId uuid.UUID
-	query := `INSERT INTO "audio_part"(part_id, project_id, start, text, path) VALUES ($1, $2, $3, $4, $5) RETURNING project_id;`
-	row := r.db.QueryRow(context, query, part.PartId, part.ProjectId, part.Start, part.Text, part.Path)
+	query := `DELETE FROM "audio_part" WHERE project_id=$1 RETURNING project_id;`
+	row := r.db.QueryRow(context, query, project.ProjectId)
 	if err := row.Scan(&projectId); err != nil {
 		r.logger.Error(err)
 		return err
+	}
+
+	for _, v := range project.AudioParts {
+		query = `INSERT INTO "audio_part"(part_id, project_id, start, text, path, duration) VALUES ($1, $2, $3, $4, $5, $6) RETURNING project_id;`
+		row = r.db.QueryRow(context, query, v.PartId, v.ProjectId, v.Start, v.Text, v.Path, v.Duration)
+		if err := row.Scan(&projectId); err != nil {
+			r.logger.Error(err)
+			return err
+		}
 	}
 
 	return nil
