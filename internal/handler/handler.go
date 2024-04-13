@@ -85,13 +85,14 @@ func NewHandler(logger *logrus.Logger) *Handler {
 
 		voice2textClient := pb.NewAIServiceClient(conn)
 
-		image2textAddress := vp.GetString("python.image2text.address")
-		conn, err = grpc.Dial(image2textAddress, grpc.WithInsecure(), grpc.WithBlock())
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		logger.Info("connected to image2text")
+		//image2textAddress := vp.GetString("python.image2text.address")
+		//conn, err = grpc.Dial(image2textAddress, grpc.WithInsecure(), grpc.WithBlock())
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		//
+		//logger.Info("connected to image2text")
+		conn = nil
 
 		image2textClient := pb.NewImageCaptioningClient(conn)
 
