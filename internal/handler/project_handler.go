@@ -123,7 +123,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 
 		var audio []model.AudioPart
 
-		if extension == "mp4" {
+		if extension == ".mp4" {
 			_, err = exec.Command("ffmpeg", "-i", PathForMedia+filename.String()+extension, "-vn", PathForMedia+filename.String()+".mp3").Output()
 			if err != nil {
 				fmt.Printf("error %s", err)
