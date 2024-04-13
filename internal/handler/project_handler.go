@@ -142,6 +142,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 		if err = h.repo.UploadMedia(context.Request.Context(), model.Project{
 			ProjectId:  projectId,
 			VideoPath:  filename.String() + extension,
+			AudioPath:  PathForMedia + filename.String() + ".mp3",
 			UserId:     userId,
 			AudioParts: audio,
 		}); err != nil {
