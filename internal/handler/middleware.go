@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"net/http"
@@ -44,7 +43,6 @@ func (h *Handler) AuthCheck() gin.HandlerFunc {
 			gCtx.AbortWithStatus(http.StatusForbidden)
 			return
 		}
-		fmt.Println("middleware:", userId)
 
 		gCtx.Set(model.UserCtx, userId.String())
 		gCtx.Next()

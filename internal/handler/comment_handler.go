@@ -47,7 +47,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 
 	// send to python voice path=PathForMedia+imageName.String()+".png"
 
-	text := "Стэтхэм очень крут"
+	text := "группа мужчин, стоящих рядом с черной машиной. Они одеты в синюю форму, и автомобиль кажется BMW. Мужчины расположены перед машиной, а сцена происходит на грунтовой дороге."
 
 	//path, err := h.pythonClient.VoiceTheText(context.Request.Context(), text)
 	//if err != nil {
