@@ -51,8 +51,8 @@ services:
       - '443:443'
       - '80:80'
     volumes:
-      - ${FRONT_BUILD}:/dist/
+      - ${FRONT_BUILD}:/dist
       - ${FRONT_REPO}:/icons/src/assets
-      - /etc/letsencrypt/:/etc/letsencrypt/
-      - ${NGINX_LOGS}/:/var/log/nginx/
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ${NGINX_LOGS}:/var/log/nginx
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
