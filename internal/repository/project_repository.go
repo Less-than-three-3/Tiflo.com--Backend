@@ -150,7 +150,8 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 	SELECT 
 		p.project_id,
 		p.name,
-		p.path,
+		p.video_path,
+		p.audio_path,
 		p.user_id,
 		ap.part_id,
 		ap.start,
@@ -178,11 +179,12 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 		var userId uuid.UUID
 		var partId uuid.UUID
 		var projectPath sql.NullString
+		var projectAudioPath sql.NullString
 
 		var audioPath, audioText sql.NullString
 		var duration, start sql.NullInt64
 
-		err = rows.Scan(&projectId, &name, &projectPath, &userId, &partId, &start, &duration, &audioText, &audioPath)
+		err = rows.Scan(&projectId, &name, &projectPath, &projectAudioPath, &userId, &partId, &start, &duration, &audioText, &audioPath)
 		if err != nil {
 			return nil, err
 		}
@@ -193,6 +195,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 				ProjectId:  projectId,
 				Name:       name,
 				VideoPath:  projectPath.String,
+				AudioPath:  projectAudioPath.String,
 				UserId:     userId,
 				AudioParts: []model.AudioPart{},
 			}
