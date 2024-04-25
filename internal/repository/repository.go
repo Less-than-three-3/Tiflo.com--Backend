@@ -27,6 +27,10 @@ type Repository interface {
 	UploadMedia(context context.Context, project model.Project) error
 
 	SaveProjectAudio(context context.Context, project model.Project) error
+
+	GetAudioPartBySplitPoint(context context.Context, splitPoint int64, projectId uuid.UUID) (model.AudioPart, error)
+	GetAudioPartsAfterSplitPoint(context context.Context, splitPoint int64, projectId uuid.UUID) ([]model.AudioPart, error)
+	UpdateAudioParts(context context.Context, audioPart model.AudioPart) error
 }
 
 type RepositoryPostgres struct {

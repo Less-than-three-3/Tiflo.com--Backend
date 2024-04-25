@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
-	"tiflo/internal/repository"
 
 	_ "tiflo/docs"
+	"tiflo/internal/repository"
 	"tiflo/pkg/auth"
+	"tiflo/pkg/ffmpeg"
 	"tiflo/pkg/grpc/client"
 	pythonClient "tiflo/pkg/grpc/client"
 	pb "tiflo/pkg/grpc/generated"
@@ -34,6 +35,7 @@ type Handler struct {
 	hasher       hash.PasswordHasher
 	tokenManager auth.TokenManager
 	pythonClient client.AI
+	mediaService ffmpeg.MediaService
 }
 
 func initConfig(vp *viper.Viper, configPath string) error {
@@ -118,6 +120,7 @@ func NewHandler(logger *logrus.Logger) *Handler {
 		hasher:       hash.NewSHA256Hasher(vp.GetString("auth.salt")),
 		tokenManager: tokenManager,
 		redisClient:  redisClient,
+		mediaService: ffmpeg.NewMediaService(PathForMedia, logger),
 	}
 }
 

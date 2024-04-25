@@ -23,6 +23,25 @@ func (r *RepositoryPostgres) CreateProject(context context.Context, userId uuid.
 	return newProject, nil
 }
 
+func (r *RepositoryPostgres) UpdateAudioParts(context context.Context, audioPart model.AudioPart) error {
+	var partId uuid.UUID
+	query := `INSERT INTO "audio_part" (part_id, project_id, start, duration, text, path)
+			VALUES
+    		($1, $2, $3, $4, $5, $6)
+			ON CONFLICT (part_id) DO UPDATE
+			SET start = EXCLUDED.start RETURNING part_id;
+	`
+
+	row := r.db.QueryRow(context, query, audioPart.PartId, audioPart.ProjectId, audioPart.Start,
+		audioPart.Duration, audioPart.Text, audioPart.Path)
+	if err := row.Scan(&partId); err != nil {
+		r.logger.Error(err)
+		return err
+	}
+
+	return nil
+}
+
 func (r *RepositoryPostgres) RenameProject(context context.Context, project model.Project) error {
 	query := `UPDATE "project" SET name=$1 WHERE project_id=$2 AND user_id=$3;`
 	var newProject model.Project
@@ -143,6 +162,60 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 	}
 
 	return project, nil
+}
+
+func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, splitPoint int64,
+	projectId uuid.UUID) (model.AudioPart, error) {
+	query := `
+	SELECT part_id, project_id, start, duration, text, path
+	FROM audio_part
+	WHERE 
+		 project_id=$1 AND $2 BETWEEN start AND (start + duration);
+	`
+
+	var audioPart model.AudioPart
+	row := r.db.QueryRow(context, query, projectId, splitPoint)
+	if err := row.Scan(&audioPart.PartId, &audioPart.ProjectId, &audioPart.Start, &audioPart.Duration,
+		&audioPart.Text, &audioPart.Path); err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return model.AudioPart{}, model.NotFound
+		}
+		r.logger.Error(err)
+		return model.AudioPart{}, err
+	}
+
+	return audioPart, nil
+}
+
+func (r *RepositoryPostgres) GetAudioPartsAfterSplitPoint(context context.Context, splitPoint int64,
+	projectId uuid.UUID) ([]model.AudioPart, error) {
+	query := `
+	SELECT part_id, project_id, start, duration, text, path
+	FROM audio_part
+	WHERE 
+		 project_id=$1 AND start > $2;
+	`
+
+	var audioParts []model.AudioPart
+	rows, err := r.db.Query(context, query, projectId, splitPoint)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var audioPart model.AudioPart
+
+		if err = rows.Scan(&audioPart.PartId, &audioPart.ProjectId, &audioPart.Start, &audioPart.Duration,
+			&audioPart.Text, &audioPart.Path); err != nil {
+			r.logger.Error(err)
+			return nil, err
+		}
+
+		audioParts = append(audioParts, audioPart)
+	}
+
+	return audioParts, nil
 }
 
 func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uuid.UUID) ([]model.Project, error) {
