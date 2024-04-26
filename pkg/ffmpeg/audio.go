@@ -29,7 +29,7 @@ import (
 //	     |           |             |                  |
 //	                 |  duration1  |
 func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPointStr string, duration time.Duration) ([]model.AudioPart, error) {
-	var result = make([]model.AudioPart, 2)
+	var result = make([]model.AudioPart, 0, 2)
 
 	firstPartName := uuid.New()
 
