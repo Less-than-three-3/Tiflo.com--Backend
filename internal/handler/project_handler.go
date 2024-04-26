@@ -129,11 +129,17 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 				fmt.Printf("error %s", err)
 			}
 
+			_, durationInt, err := h.mediaService.GetAudioDuration(filename.String() + ".mp3")
+			if err != nil {
+				context.String(http.StatusInternalServerError, "Failed to get time duration")
+				return
+			}
+
 			audio = append(audio, model.AudioPart{
 				PartId:    uuid.New(),
 				ProjectId: projectId,
 				Start:     0,
-				Duration:  0,
+				Duration:  durationInt,
 				Text:      "",
 				Path:      PathForMedia + filename.String() + ".mp3",
 			})

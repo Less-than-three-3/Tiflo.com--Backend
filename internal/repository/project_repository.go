@@ -43,7 +43,7 @@ func (r *RepositoryPostgres) UpdateAudioParts(context context.Context, audioPart
 }
 
 func (r *RepositoryPostgres) RenameProject(context context.Context, project model.Project) error {
-	query := `UPDATE "project" SET name=$1 WHERE project_id=$2 AND user_id=$3;`
+	query := `UPDATE "project" SET name=$1 WHERE project_id=$2 AND user_id=$3 RETURNING project_id, name, user_id;`
 	var newProject model.Project
 
 	row := r.db.QueryRow(context, query, project.Name, project.ProjectId, project.UserId)
@@ -151,7 +151,7 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 		ap.Path = audioPath.String
 		ap.Start = start.Int64
 		ap.Duration = duration.Int64
-
+		ap.ProjectId = project.ProjectId
 		ap.Text = audioText.String
 
 		project.AudioParts = append(project.AudioParts, ap)
