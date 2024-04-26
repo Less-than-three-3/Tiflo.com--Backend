@@ -109,12 +109,12 @@ func (s *MediaServiceImpl) ConvertTimeFromString(timeString string) int64 {
 	}
 
 	secondsWithMillisecondsArr := strings.Split(parts[2], ".")
-	seconds, err := strconv.Atoi(secondsWithMillisecondsArr[1])
+	seconds, err := strconv.Atoi(secondsWithMillisecondsArr[0])
 	if err != nil {
 		s.logger.Error(err)
 	}
 
-	milliseconds, err := strconv.Atoi(secondsWithMillisecondsArr[0])
+	milliseconds, err := strconv.Atoi(secondsWithMillisecondsArr[1])
 	if err != nil {
 		s.logger.Error(err)
 	}
