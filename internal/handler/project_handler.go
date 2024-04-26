@@ -129,6 +129,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 				fmt.Printf("error %s", err)
 			}
 
+			h.logger.Info(filename.String())
 			_, durationInt, err := h.mediaService.GetAudioDuration(filename.String() + ".mp3")
 			if err != nil {
 				context.String(http.StatusInternalServerError, "Failed to get time duration")

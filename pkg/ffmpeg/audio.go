@@ -145,7 +145,8 @@ func (s *MediaServiceImpl) GetAudioDuration(audioPath string) (time.Duration, in
 
 	decoder := wav.NewDecoder(file)
 	duration, err = decoder.Duration()
-	durationInt := duration.Milliseconds() / 100
-
+	s.logger.Info(duration)
+	durationInt := duration.Milliseconds() / int64(100)
+	s.logger.Info(durationInt)
 	return duration, durationInt, nil
 }
