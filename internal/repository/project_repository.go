@@ -171,7 +171,7 @@ func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, s
 	SELECT part_id, project_id, start, duration, text, path
 	FROM audio_part
 	WHERE 
-		 project_id=$1 AND $2 BETWEEN start AND (start + duration);
+		 project_id=$1 AND start < $2 AND (start + duration) > $2;
 	`
 
 	var audioPart model.AudioPart
