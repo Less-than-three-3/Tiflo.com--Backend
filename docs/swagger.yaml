@@ -22,6 +22,11 @@ definitions:
       text:
         type: string
     type: object
+  model.Comment:
+    properties:
+      splitPoint:
+        type: string
+    type: object
   model.Image:
     properties:
       name:
@@ -347,6 +352,42 @@ paths:
             additionalProperties: true
             type: object
       summary: Upload media file for project
+      tags:
+      - Project
+  /api/projects/{projectId}/video/comment:
+    post:
+      consumes:
+      - application/json
+      description: Create comment on video using split point
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Split point
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/model.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Project'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create comment on video
       tags:
       - Project
   /api/projects/{projectId}/voice:

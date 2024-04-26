@@ -9,6 +9,19 @@ import (
 	"tiflo/model"
 )
 
+// CreateComment godoc
+// @Summary      Create comment on video
+// @Description  Create comment on video using split point
+// @Tags         Project
+// @Accept       json
+// @Produce      json
+// @Param        projectId  path  string  true  "Project Id"
+// @Param        comment  body  model.Comment  true  "Split point"
+// @Success      200  {object}  model.Project
+// @Failure      400  {object}  error
+// @Failure      401  {object}  error
+// @Failure      500  {object}  error
+// @Router       /api/projects/{projectId}/video/comment [post]
 func (h *Handler) CreateComment(context *gin.Context) {
 	projectIdStr := context.Param("projectId")
 	projectId, err := uuid.Parse(projectIdStr)
