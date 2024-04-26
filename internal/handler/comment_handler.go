@@ -112,6 +112,8 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		audioPartsAfterSplitPoint[i].Duration += durationInt
 	}
 
+	h.logger.Info(audioPartsAfterSplitPoint)
+
 	audioPartsAfterSplitPoint = append(audioPartsAfterSplitPoint, splittedParts...)
 	for _, part := range audioPartsAfterSplitPoint {
 		err = h.repo.UpdateAudioParts(context.Request.Context(), part)
