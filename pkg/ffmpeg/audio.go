@@ -156,7 +156,7 @@ func (s *MediaServiceImpl) GetAudioDurationWav(audioPath string) (time.Duration,
 
 func (s *MediaServiceImpl) GetAudioDurationMp3(audioPath string) (time.Duration, int64, error) {
 	var duration time.Duration
-	file, err := os.Open("example.mp3")
+	file, err := os.Open(s.pathForMedia + audioPath)
 	if err != nil {
 		s.logger.Error(err)
 		return duration, 0, err
