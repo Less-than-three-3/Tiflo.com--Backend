@@ -168,7 +168,7 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, splitPoint int64,
 	projectId uuid.UUID) (model.AudioPart, error) {
 	query := `
-	SELECT part_id, project_id, start, duration, text, path
+	SELECT part_id, project_id, start, duration, path
 	FROM audio_part
 	WHERE 
 		 project_id=$1 AND start < $2 AND (start + duration) > $2;
@@ -178,7 +178,7 @@ func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, s
 	var audioPart model.AudioPart
 	row := r.db.QueryRow(context, query, projectId, splitPoint)
 	if err := row.Scan(&audioPart.PartId, &audioPart.ProjectId, &audioPart.Start, &audioPart.Duration,
-		&audioPart.Text, &audioPart.Path); err != nil {
+		&audioPart.Path); err != nil {
 		if errors.Is(pgx.ErrNoRows, err) {
 			r.logger.Error(err)
 			return model.AudioPart{}, model.NotFound
