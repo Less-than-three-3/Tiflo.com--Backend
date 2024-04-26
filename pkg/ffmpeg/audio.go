@@ -2,6 +2,7 @@ package ffmpeg
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/go-audio/wav"
 	"github.com/google/uuid"
+	"github.com/tcolgate/mp3"
 )
 
 // SplitAudio splits audioPart in two parts and recount their start and duration according to duration of voiced tiflo comment
@@ -134,9 +136,10 @@ func (s *MediaServiceImpl) convertDurationToInt64(duration time.Duration) int64 
 	return duration.Milliseconds() / 100
 }
 
-func (s *MediaServiceImpl) GetAudioDuration(audioPath string) (time.Duration, int64, error) {
+func (s *MediaServiceImpl) GetAudioDurationWav(audioPath string) (time.Duration, int64, error) {
 	var duration time.Duration
 	file, err := os.Open(s.pathForMedia + audioPath)
+	s.logger.Info(s.pathForMedia + audioPath)
 	if err != nil {
 		s.logger.Error(err)
 		return duration, 0, err
@@ -149,4 +152,36 @@ func (s *MediaServiceImpl) GetAudioDuration(audioPath string) (time.Duration, in
 	durationInt := duration.Milliseconds() / int64(100)
 	s.logger.Info(durationInt)
 	return duration, durationInt, nil
+}
+
+func (s *MediaServiceImpl) GetAudioDurationMp3(audioPath string) (time.Duration, int64, error) {
+	var duration time.Duration
+	file, err := os.Open("example.mp3")
+	if err != nil {
+		s.logger.Error(err)
+		return duration, 0, err
+	}
+	defer file.Close()
+
+	var t int64
+
+	d := mp3.NewDecoder(file)
+	var f mp3.Frame
+	skipped := 0
+
+	for {
+
+		if err := d.Decode(&f, &skipped); err != nil {
+			if err == io.EOF {
+				break
+			}
+			s.logger.Error(err)
+			return duration, 0, err
+		}
+
+		duration += f.Duration()
+	}
+
+	s.logger.Info(t)
+	return duration, duration.Milliseconds() / 100, nil
 }

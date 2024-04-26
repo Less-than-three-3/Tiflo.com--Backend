@@ -69,7 +69,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	path := "6a53987b-ba3e-45a9-9e96-521c2eb18e12.wav"
 	// get duration
 
-	duration, durationInt, err := h.mediaService.GetAudioDuration(path)
+	duration, durationInt, err := h.mediaService.GetAudioDurationWav(path)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})

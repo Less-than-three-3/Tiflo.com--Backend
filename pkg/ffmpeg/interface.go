@@ -13,7 +13,8 @@ type MediaService interface {
 	ExtractFrame(videoPath string, timestamp string) (uuid.UUID, error)
 
 	ConvertTimeFromString(timeString string) int64
-	GetAudioDuration(audioPath string) (time.Duration, int64, error)
+	GetAudioDurationWav(audioPath string) (time.Duration, int64, error)
+	GetAudioDurationMp3(audioPath string) (time.Duration, int64, error)
 }
 
 type MediaServiceImpl struct {
