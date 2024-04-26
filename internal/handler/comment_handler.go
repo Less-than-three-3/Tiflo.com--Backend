@@ -85,6 +85,13 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
+	err = h.repo.DeleteAudioPart(context.Request.Context(), audioPartToSplit.PartId)
+	if err != nil {
+		h.logger.Error(err)
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
 	splittedParts, err := h.mediaService.SplitAudio(audioPartToSplit, comment.SplitPoint, duration)
 	if err != nil {
 		h.logger.Error(err)
