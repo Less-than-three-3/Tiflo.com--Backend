@@ -67,8 +67,9 @@ func (r *RepositoryPostgres) UploadMedia(context context.Context, project model.
 
 	if len(project.AudioParts) > 0 {
 		var projectId uuid.UUID
-		query2 := `INSERT INTO "audio_part"(part_id, project_id, path) VALUES ($1, $2, $3) RETURNING project_id;`
-		row = r.db.QueryRow(context, query2, project.AudioParts[0].PartId, project.AudioParts[0].ProjectId, project.AudioParts[0].Path)
+		query2 := `INSERT INTO "audio_part"(part_id, project_id, path, duration) VALUES ($1, $2, $3, $4) RETURNING project_id;`
+		row = r.db.QueryRow(context, query2, project.AudioParts[0].PartId, project.AudioParts[0].ProjectId,
+			project.AudioParts[0].Path, project.AudioParts[0].Duration)
 		if err := row.Scan(&projectId); err != nil {
 			r.logger.Error(err)
 			return err
