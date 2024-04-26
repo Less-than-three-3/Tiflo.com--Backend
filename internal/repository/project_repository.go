@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-
 	"tiflo/model"
 
 	"github.com/google/uuid"
@@ -199,7 +198,7 @@ func (r *RepositoryPostgres) GetAudioPartsAfterSplitPoint(context context.Contex
 
 	var audioParts []model.AudioPart
 	rows, err := r.db.Query(context, query, projectId, splitPoint)
-	if err != nil {
+	if err != nil && !errors.Is(sql.ErrNoRows, err) {
 		return nil, err
 	}
 	defer rows.Close()
