@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/jackc/pgx/v5"
 	"tiflo/model"
 
 	"github.com/google/uuid"
@@ -103,7 +104,7 @@ func (r *RepositoryPostgres) DeleteProject(context context.Context, project mode
 	query := `DELETE FROM project WHERE project_id=$1 AND user_id=$2;`
 
 	row := r.db.QueryRow(context, query, project.ProjectId, project.UserId)
-	if err := row.Scan(); err != nil && !errors.Is(sql.ErrNoRows, err) {
+	if err := row.Scan(); err != nil && !errors.Is(pgx.ErrNoRows, err) {
 		r.logger.Error(err)
 		return err
 	}
@@ -177,7 +178,7 @@ func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, s
 	row := r.db.QueryRow(context, query, projectId, splitPoint)
 	if err := row.Scan(&audioPart.PartId, &audioPart.ProjectId, &audioPart.Start, &audioPart.Duration,
 		&audioPart.Text, &audioPart.Path); err != nil {
-		if errors.Is(sql.ErrNoRows, err) {
+		if errors.Is(pgx.ErrNoRows, err) {
 			return model.AudioPart{}, model.NotFound
 		}
 		r.logger.Error(err)
@@ -198,7 +199,8 @@ func (r *RepositoryPostgres) GetAudioPartsAfterSplitPoint(context context.Contex
 
 	var audioParts []model.AudioPart
 	rows, err := r.db.Query(context, query, projectId, splitPoint)
-	if err != nil && !errors.Is(sql.ErrNoRows, err) {
+	r.logger.Error("GetAudioPartsAfterSplitPoint")
+	if err != nil && !errors.Is(pgx.ErrNoRows, err) {
 		return nil, err
 	}
 	defer rows.Close()
