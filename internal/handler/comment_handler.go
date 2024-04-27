@@ -108,6 +108,8 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		Path:      path,
 	})
 
+	h.logger.Info("splittedParts", splittedParts)
+
 	audioPartsAfterSplitPoint, err := h.repo.GetAudioPartsAfterSplitPoint(context.Request.Context(), splitPoint, projectId)
 	if err != nil {
 		h.logger.Error(err)
@@ -120,7 +122,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	}
 
 	audioPartsAfterSplitPoint = append(audioPartsAfterSplitPoint, splittedParts...)
-	h.logger.Info(audioPartsAfterSplitPoint)
+	h.logger.Info("len(audioPartsAfterSplitPoint) ", len(audioPartsAfterSplitPoint))
 	for _, part := range audioPartsAfterSplitPoint {
 		err = h.repo.UpdateAudioParts(context.Request.Context(), part)
 		if err != nil {
