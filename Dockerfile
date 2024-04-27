@@ -9,4 +9,4 @@ COPY --from=builder /app/tiflo_api ./binary
 RUN apt update && \
     apt install -y ffmpeg && \
     apt clean
-CMD ["./binary", "-python=false"]
+CMD ["./binary"]
