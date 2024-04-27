@@ -20,14 +20,13 @@ import (
 // @Router       /api/projects/{projectId}/voice [post]
 func (h *Handler) VoiceText(context *gin.Context) {
 	var textComment model.VoiceText
-	h.logger.Info(textComment)
 
 	if err := context.BindJSON(&textComment); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
-	h.logger.Info(textComment.Text)
+	h.logger.Info("VoiceText Handler", textComment.Text)
 
 	path, err := h.pythonClient.VoiceTheText(context.Request.Context(), textComment.Text)
 	if err != nil {

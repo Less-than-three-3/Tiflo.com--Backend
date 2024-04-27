@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 
 	"tiflo/pkg/grpc/generated"
 	pb "tiflo/pkg/grpc/generated"
@@ -29,7 +30,8 @@ func NewPythonClient(logger *logrus.Logger, voice2textClient generated.AIService
 }
 
 func (p *PythonClient) VoiceTheText(context context.Context, text string) (string, error) {
-	p.logger.Info("text: ", text)
+	//p.logger.Info("text: ", text)
+	fmt.Println("text: ", text)
 	request := pb.TextToVoice{
 		Text: text,
 	}
