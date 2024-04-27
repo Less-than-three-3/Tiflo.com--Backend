@@ -27,6 +27,8 @@ func (h *Handler) VoiceText(context *gin.Context) {
 		return
 	}
 
+	h.logger.Info(textComment)
+
 	path, err := h.pythonClient.VoiceTheText(context.Request.Context(), textComment.Text)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
