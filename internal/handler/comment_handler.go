@@ -132,7 +132,13 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		}
 	}
 
-	context.JSON(http.StatusOK, project)
+	updatedProject, err := h.repo.GetProject(context.Request.Context(), model.Project{ProjectId: projectId, UserId: userId})
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+	h.logger.Info("updatedProject ap len: ", len(updatedProject.AudioParts))
+	context.JSON(http.StatusOK, updatedProject)
 }
 
 func (h *Handler) convertTime(timeString string) int64 {
