@@ -207,6 +207,15 @@ const docTemplate = `{
                     "Audio"
                 ],
                 "summary": "Get final audio",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project Id",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
