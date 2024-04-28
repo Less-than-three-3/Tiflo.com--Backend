@@ -197,6 +197,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/:projectId/audio": {
+            "post": {
+                "description": "Get path for audio file got from all audio parts",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Audio"
+                ],
+                "summary": "Get final audio",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}": {
             "get": {
                 "description": "Get project name, path to media and audio parts",
@@ -330,7 +363,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/projects/{projectId}/image/text": {
+        "/api/projects/{projectId}/image/comment": {
             "post": {
                 "description": "Create tiflo comment for given image",
                 "consumes": [
@@ -340,7 +373,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Project"
+                    "Comment"
                 ],
                 "summary": "Create tiflo comment",
                 "parameters": [
@@ -434,7 +467,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Project"
+                    "Comment"
                 ],
                 "summary": "Create comment on video",
                 "parameters": [

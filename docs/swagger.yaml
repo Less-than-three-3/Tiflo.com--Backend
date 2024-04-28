@@ -198,6 +198,29 @@ paths:
       summary: Create new user project
       tags:
       - Project
+  /api/projects/:projectId/audio:
+    post:
+      description: Get path for audio file got from all audio parts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get final audio
+      tags:
+      - Audio
   /api/projects/{projectId}:
     delete:
       description: Delete project
@@ -290,7 +313,7 @@ paths:
       summary: Update project name
       tags:
       - Project
-  /api/projects/{projectId}/image/text:
+  /api/projects/{projectId}/image/comment:
     post:
       consumes:
       - application/json
@@ -321,7 +344,7 @@ paths:
           schema: {}
       summary: Create tiflo comment
       tags:
-      - Project
+      - Comment
   /api/projects/{projectId}/media:
     post:
       consumes:
@@ -389,7 +412,7 @@ paths:
           schema: {}
       summary: Create comment on video
       tags:
-      - Project
+      - Comment
   /api/projects/{projectId}/voice:
     post:
       consumes:

@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"net/http"
-	"os/exec"
 	"path/filepath"
 	"tiflo/model"
 
@@ -124,9 +122,10 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 		var audio []model.AudioPart
 
 		if extension == ".mp4" {
-			_, err = exec.Command("ffmpeg", "-i", PathForMedia+filename.String()+extension, "-vn", PathForMedia+filename.String()+".mp3").Output()
+			err = h.mediaService.GetAudioFromVideo(filename.String(), extension)
 			if err != nil {
-				fmt.Printf("error %s", err)
+				context.String(http.StatusInternalServerError, "Failed to get audio from video")
+				return
 			}
 
 			h.logger.Info(filename.String())
@@ -142,14 +141,14 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 				Start:     0,
 				Duration:  durationInt,
 				Text:      "",
-				Path:      PathForMedia + filename.String() + ".mp3",
+				Path:      filename.String() + ".wav",
 			})
 		}
 
 		if err = h.repo.UploadMedia(context.Request.Context(), model.Project{
 			ProjectId:  projectId,
 			VideoPath:  filename.String() + extension,
-			AudioPath:  PathForMedia + filename.String() + ".mp3",
+			AudioPath:  filename.String() + ".wav",
 			UserId:     userId,
 			AudioParts: audio,
 		}); err != nil {
@@ -274,6 +273,41 @@ func (h *Handler) GetProjects(context *gin.Context) {
 //	context.JSON(http.StatusOK, "success")
 //}
 
-func (h *Handler) f(context *gin.Context) {
+// ConcatAudio godoc
+// @Summary      Get final audio
+// @Description  Get path for audio file got from all audio parts
+// @Tags         Audio
+// @Produce      json
+// @Success      200  {object}  map[string]any
+// @Failure      400  {object}  error
+// @Failure      401  {object}  error
+// @Failure      500  {object}  error
+// @Router       /api/projects/:projectId/audio [post]
+func (h *Handler) ConcatAudio(context *gin.Context) {
+	userId, err := model.GetUserId(context)
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
 
+	projectIdStr := context.Param("projectId")
+	projectId, err := uuid.Parse(projectIdStr)
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	project, err := h.repo.GetProject(context.Request.Context(), model.Project{ProjectId: projectId, UserId: userId})
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	path, err := h.mediaService.ConcatAudio(project.AudioParts)
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"path": path})
 }
