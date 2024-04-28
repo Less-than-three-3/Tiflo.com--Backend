@@ -38,7 +38,7 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 	startStr := s.convertTimeToString(start)
 
 	splitPoint := s.ConvertTimeFromString(splitPointStr)
-	splitPointDuration := time.Duration(splitPoint)
+	splitPointDuration := time.Duration(splitPoint * 100 * 1000 * 1000)
 	s.logger.Info("splitPoint: ", splitPoint)
 	s.logger.Info("splitPointDuration: ", splitPointDuration)
 	s.logger.Info("splitPointDurationSec: ", splitPointDuration.Seconds())
