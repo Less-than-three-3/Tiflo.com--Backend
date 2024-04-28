@@ -40,6 +40,9 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 	splitPoint := s.ConvertTimeFromString(splitPointStr)
 	splitPointDuration := time.Duration(splitPoint)
 	s.logger.Info("splitPoint: ", splitPoint)
+	s.logger.Info("splitPointDuration: ", splitPointDuration)
+	s.logger.Info("splitPointDurationSec: ", splitPointDuration.Seconds())
+	s.logger.Info("int(splitPointDuration.Seconds())%60: ", int(splitPointDuration.Seconds())%60)
 
 	s.logger.Info("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
 		"-ss", startStr, "-t", fmt.Sprintf("%02d:%02d:%02d.%03d", int(splitPointDuration.Hours()), int(splitPointDuration.Minutes())%60,
