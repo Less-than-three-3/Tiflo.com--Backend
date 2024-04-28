@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -171,7 +172,7 @@ func (s *MediaServiceImpl) GetAudioDurationMp3(audioPath string) (time.Duration,
 
 	for {
 
-		if err := d.Decode(&f, &skipped); err != nil {
+		if err = d.Decode(&f, &skipped); err != nil {
 			if err == io.EOF {
 				break
 			}
@@ -184,4 +185,39 @@ func (s *MediaServiceImpl) GetAudioDurationMp3(audioPath string) (time.Duration,
 
 	s.logger.Info(t)
 	return duration, duration.Milliseconds() / 100, nil
+}
+
+// ConcatAudio ffmpeg -i audio1.wav -i audio2.wav -i audio3.wav -i audio4.wav -i audio5.wav \
+// -filter_complex '[0:0][1:0][2:0][3:0][4:0]concat=n=5:v=0:a=1[out]' \
+// -map '[out]' output.wav
+func (s *MediaServiceImpl) ConcatAudio(audioParts []model.AudioPart) (string, error) {
+	sort.SliceStable(audioParts, func(i, j int) bool {
+		return audioParts[i].Start < audioParts[j].Start
+	})
+
+	var arguments []string
+	var filter = "'"
+
+	for i, part := range audioParts {
+		arguments = append(arguments, "-i", s.pathForMedia+part.Path)
+		filter += fmt.Sprintf("[%d:0]", i)
+	}
+
+	filter += fmt.Sprintf("concat=n=%d:v=0:a=1[out]'", len(audioParts)+1)
+
+	s.logger.Info(filter)
+	s.logger.Info(arguments)
+	concatAudio := uuid.New()
+
+	arguments = append(arguments, "-filter_complex", filter, "-map", "'[out]'", s.pathForMedia+concatAudio.String()+".wav")
+
+	s.logger.Info(arguments)
+
+	_, err := exec.Command("ffmpeg", arguments...).Output()
+	if err != nil {
+		s.logger.Error(err)
+		return "", err
+	}
+
+	return concatAudio.String(), nil
 }

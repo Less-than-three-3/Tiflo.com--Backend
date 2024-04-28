@@ -4,15 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
-	"strconv"
-	"strings"
 	"tiflo/model"
 )
 
 // CreateComment godoc
 // @Summary      Create comment on video
 // @Description  Create comment on video using split point
-// @Tags         Project
+// @Tags         Comment
 // @Accept       json
 // @Produce      json
 // @Param        projectId  path  string  true  "Project Id"
@@ -139,18 +137,4 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	}
 	h.logger.Info("updatedProject ap len: ", len(updatedProject.AudioParts))
 	context.JSON(http.StatusOK, updatedProject)
-}
-
-func (h *Handler) convertTime(timeString string) int64 {
-	parts := strings.Split(timeString, ":")
-	minutes, err := strconv.Atoi(parts[0])
-	if err != nil {
-		h.logger.Error(err)
-	}
-	seconds, err := strconv.Atoi(parts[1])
-	if err != nil {
-		h.logger.Error(err)
-	}
-
-	return int64(minutes*60 + seconds)
 }

@@ -169,11 +169,12 @@ func (h *Handler) InitRouter() *gin.Engine {
 			projectsRouter.GET("/:projectId/", h.GetProjectInfo)
 
 			projectsRouter.POST("/:projectId/media", h.UploadMedia)
-			//projectsRouter.POST("/:projectId/tifloComment/image", h.AddTifloCommentToImage)
 
 			projectsRouter.POST("/:projectId/voice", h.VoiceText)
 			projectsRouter.POST("/:projectId/video/comment", h.CreateComment)
-			projectsRouter.POST("/:projectId/image/text", h.ImageToText)
+			projectsRouter.POST("/:projectId/image/comment", h.ImageToText)
+
+			projectsRouter.POST("/:projectId/audio", h.ConcatAudio)
 		}
 
 	}

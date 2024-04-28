@@ -40,7 +40,7 @@ func (h *Handler) VoiceText(context *gin.Context) {
 // ImageToText godoc
 // @Summary      Create tiflo comment
 // @Description  Create tiflo comment for given image
-// @Tags         Project
+// @Tags         Comment
 // @Accept       json
 // @Produce      json
 // @Param        user  body  model.Image  true  "name of image(uuid)"
@@ -48,7 +48,7 @@ func (h *Handler) VoiceText(context *gin.Context) {
 // @Failure      400  {object}  error
 // @Failure      401  {object}  error
 // @Failure      500  {object}  error
-// @Router       /api/projects/{projectId}/image/text [post]
+// @Router       /api/projects/{projectId}/image/comment [post]
 func (h *Handler) ImageToText(context *gin.Context) {
 	var imagePath model.Image
 	h.logger.Info(imagePath)
