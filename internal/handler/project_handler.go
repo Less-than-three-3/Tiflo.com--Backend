@@ -283,7 +283,7 @@ func (h *Handler) GetProjects(context *gin.Context) {
 // @Failure      400  {object}  error
 // @Failure      401  {object}  error
 // @Failure      500  {object}  error
-// @Router       /api/projects/:projectId/audio [post]
+// @Router       /api/projects/{projectId}/audio [post]
 func (h *Handler) ConcatAudio(context *gin.Context) {
 	userId, err := model.GetUserId(context)
 	if err != nil {
@@ -294,6 +294,7 @@ func (h *Handler) ConcatAudio(context *gin.Context) {
 	projectIdStr := context.Param("projectId")
 	projectId, err := uuid.Parse(projectIdStr)
 	if err != nil {
+		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
