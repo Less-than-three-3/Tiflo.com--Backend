@@ -277,6 +277,7 @@ func (h *Handler) GetProjects(context *gin.Context) {
 // @Summary      Get final audio
 // @Description  Get path for audio file got from all audio parts
 // @Tags         Audio
+// @Param        projectId  path  string  true  "Project Id"
 // @Produce      json
 // @Success      200  {object}  map[string]any
 // @Failure      400  {object}  error

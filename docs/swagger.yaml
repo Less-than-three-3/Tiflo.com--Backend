@@ -201,6 +201,12 @@ paths:
   /api/projects/:projectId/audio:
     post:
       description: Get path for audio file got from all audio parts
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
