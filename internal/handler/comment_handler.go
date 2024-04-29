@@ -64,16 +64,19 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	//	return
 	//}
 
-	splitPoint := h.mediaService.ConvertTimeFromString(comment.SplitPoint)
+	path := "6a53987b-ba3e-45a9-9e96-521c2eb18e12.wav"
+	// get duration
 
-	audioPartToSplit, err := h.repo.GetAudioPartBySplitPoint(context.Request.Context(), splitPoint, projectId)
+	duration, durationInt, err := h.mediaService.GetAudioDurationWav(path)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	duration, durationInt, err := h.mediaService.GetAudioDurationWav(audioPartToSplit.Path)
+	splitPoint := h.mediaService.ConvertTimeFromString(comment.SplitPoint)
+
+	audioPartToSplit, err := h.repo.GetAudioPartBySplitPoint(context.Request.Context(), splitPoint, projectId)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -100,7 +103,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		Start:     splitPoint,
 		Duration:  durationInt,
 		Text:      text,
-		Path:      audioPartToSplit.Path,
+		Path:      path,
 	})
 
 	h.logger.Info("splittedParts", splittedParts)
