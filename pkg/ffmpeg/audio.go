@@ -49,7 +49,7 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 			int(splitPointDuration.Seconds())%60, int(splitPointDuration.Milliseconds())%60),
 		s.pathForMedia+firstPartName.String()+".wav")
 
-	_, err := exec.Command("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec",
+	_, err := exec.Command("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
 		"-ss", startStr, "-t", fmt.Sprintf("%02d:%02d:%02d.%03d", int(splitPointDuration.Hours()), int(splitPointDuration.Minutes())%60,
 			int(splitPointDuration.Seconds())%60, int(splitPointDuration.Milliseconds())%60),
 		s.pathForMedia+firstPartName.String()+".wav").Output()
