@@ -56,12 +56,11 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 	})
 
 	secondPartName := uuid.New()
-	durationInt := s.convertDurationToInt64(duration)
-	s.logger.Info("-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(start+audioPartToSplit.Duration-splitPoint),
+	s.logger.Info("-ss ", s.convertTimeToString(firstPartEnd), " -t ", s.convertTimeToString(start+audioPartToSplit.Duration-splitPoint),
 		s.pathForMedia+secondPartName.String()+".wav")
 
 	_, err = exec.Command("ffmpeg", "-i", s.pathForMedia+audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
-		"-ss", s.convertTimeToString(firstPartEnd+durationInt), "-t", s.convertTimeToString(start+audioPartToSplit.Duration-splitPoint),
+		"-ss", s.convertTimeToString(firstPartEnd), "-t", s.convertTimeToString(start+audioPartToSplit.Duration-splitPoint),
 		s.pathForMedia+secondPartName.String()+".wav").Output()
 	if err != nil {
 		s.logger.Error(err)
@@ -198,7 +197,7 @@ func (s *MediaServiceImpl) ConcatAudio(audioParts []model.AudioPart) (string, er
 		filter += fmt.Sprintf("[%d:0]", i)
 	}
 
-	filter += fmt.Sprintf("concat=n=%d:v=0:a=1[out]'", len(audioParts)+1)
+	filter += fmt.Sprintf("concat=n=%d:v=0:a=1[out]'", len(audioParts))
 
 	s.logger.Info(filter)
 	s.logger.Info(arguments)
