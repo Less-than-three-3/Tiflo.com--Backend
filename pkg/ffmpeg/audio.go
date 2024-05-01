@@ -3,6 +3,7 @@ package ffmpeg
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"sort"
@@ -206,11 +207,19 @@ func (s *MediaServiceImpl) ConcatAudio(audioParts []model.AudioPart) (string, er
 	arguments = append(arguments, "-filter_complex", filter, "-map", "'[out]'", s.pathForMedia+concatAudio.String()+".wav")
 
 	s.logger.Info(arguments)
+	//
+	//_, err := exec.Command("ffmpeg", arguments...).Output()
+	//if err != nil {
+	//	s.logger.Error(err)
+	//	return "", err
+	//}
 
-	_, err := exec.Command("ffmpeg", arguments...).Output()
+	cmd := exec.Command("ffmpeg", arguments...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
 	if err != nil {
-		s.logger.Error(err)
-		return "", err
+		log.Printf("FFmpeg command failed: %v", err)
 	}
 
 	return concatAudio.String(), nil
