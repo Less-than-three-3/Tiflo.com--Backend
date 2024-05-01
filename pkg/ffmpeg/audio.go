@@ -57,11 +57,11 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 
 	secondPartName := uuid.New()
 	durationInt := s.convertDurationToInt64(duration)
-	s.logger.Info("-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(audioPartToSplit.Duration-firstPartEnd-durationInt),
+	s.logger.Info("-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(start+audioPartToSplit.Duration-splitPoint),
 		s.pathForMedia+secondPartName.String()+".wav")
 
 	_, err = exec.Command("ffmpeg", "-i", s.pathForMedia+audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
-		"-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(audioPartToSplit.Duration-firstPartEnd-durationInt),
+		"-ss", s.convertTimeToString(firstPartEnd+durationInt), "-t", s.convertTimeToString(start+audioPartToSplit.Duration-splitPoint),
 		s.pathForMedia+secondPartName.String()+".wav").Output()
 	if err != nil {
 		s.logger.Error(err)
@@ -72,7 +72,7 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 		PartId:    uuid.New(),
 		ProjectId: audioPartToSplit.ProjectId,
 		Start:     splitPoint + s.convertDurationToInt64(duration),
-		Duration:  audioPartToSplit.Duration - firstPartEnd - durationInt,
+		Duration:  start + audioPartToSplit.Duration - splitPoint,
 		Text:      "",
 		Path:      secondPartName.String() + ".wav",
 	})
