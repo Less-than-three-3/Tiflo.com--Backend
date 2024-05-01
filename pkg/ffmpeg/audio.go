@@ -39,10 +39,11 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 
 	s.logger.Info("-ss ", "00:00:00.000", " -t ", s.convertTimeToString(firstPartEnd), s.pathForMedia+firstPartName.String()+".wav")
 
-	_, err := exec.Command("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
+	_, err := exec.Command("ffmpeg", "-i", s.pathForMedia+audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
 		"-ss", "00:00:00.000", "-t", s.convertTimeToString(firstPartEnd),
 		s.pathForMedia+firstPartName.String()+".wav").Output()
 	if err != nil {
+		s.logger.Error(err)
 		return nil, err
 	}
 	result = append(result, model.AudioPart{
@@ -59,10 +60,11 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 	s.logger.Info("-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(audioPartToSplit.Duration-firstPartEnd-durationInt),
 		s.pathForMedia+secondPartName.String()+".wav")
 
-	_, err = exec.Command("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
+	_, err = exec.Command("ffmpeg", "-i", s.pathForMedia+audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
 		"-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(audioPartToSplit.Duration-firstPartEnd-durationInt),
 		s.pathForMedia+secondPartName.String()+".wav").Output()
 	if err != nil {
+		s.logger.Error(err)
 		return nil, err
 	}
 

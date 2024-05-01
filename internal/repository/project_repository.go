@@ -173,7 +173,6 @@ func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, s
 	WHERE 
 		 project_id=$1 AND start < $2 AND (start + duration) > $2;
 	`
-	r.logger.Info("splitPoint:", splitPoint)
 
 	var audioPart model.AudioPart
 	row := r.db.QueryRow(context, query, projectId, splitPoint)
