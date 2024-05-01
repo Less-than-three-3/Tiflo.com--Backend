@@ -195,7 +195,7 @@ func (s *MediaServiceImpl) ConcatAudio(audioParts []model.AudioPart) (string, er
 
 	for i, part := range audioParts {
 		arguments = append(arguments, "-i", s.pathForMedia+part.Path)
-		filter += fmt.Sprintf("[%d:0]", i)
+		filter += fmt.Sprintf("[%d:a]", i)
 	}
 
 	filter += fmt.Sprintf("concat=n=%d:v=0:a=1[out]'", len(audioParts))
