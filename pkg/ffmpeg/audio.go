@@ -204,7 +204,7 @@ func (s *MediaServiceImpl) ConcatAudio(audioParts []model.AudioPart) (string, er
 	s.logger.Info(arguments)
 	concatAudio := uuid.New()
 
-	arguments = append(arguments, "-filter_complex", filter, "-map", "'[out]'", s.pathForMedia+concatAudio.String()+".wav")
+	arguments = append(arguments, "-filter_complex", filter, "-map", "[out]", s.pathForMedia+concatAudio.String()+".wav")
 
 	s.logger.Info(arguments)
 	//
