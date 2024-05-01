@@ -57,14 +57,13 @@ func (h *Handler) CreateComment(context *gin.Context) {
 
 	text := "группа мужчин, стоящих рядом с черной машиной. Они одеты в синюю форму, и автомобиль кажется BMW. Мужчины расположены перед машиной, а сцена происходит на грунтовой дороге."
 
-	//path, err := h.pythonClient.VoiceTheText(context.Request.Context(), text)
-	//if err != nil {
-	//	h.logger.Error(err)
-	//	context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-	//	return
-	//}
+	path, err := h.pythonClient.VoiceTheText(context.Request.Context(), text)
+	if err != nil {
+		h.logger.Error(err)
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
 
-	path := "6a53987b-ba3e-45a9-9e96-521c2eb18e12.wav"
 	// get duration
 
 	duration, durationInt, err := h.mediaService.GetAudioDurationWav(path)
@@ -83,14 +82,14 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
-	err = h.repo.DeleteAudioPart(context.Request.Context(), audioPartToSplit.PartId)
+	splittedParts, err := h.mediaService.SplitAudio(audioPartToSplit, comment.SplitPoint, duration)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	splittedParts, err := h.mediaService.SplitAudio(audioPartToSplit, comment.SplitPoint, duration)
+	err = h.repo.DeleteAudioPart(context.Request.Context(), audioPartToSplit.PartId)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
