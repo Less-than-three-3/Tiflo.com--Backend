@@ -33,21 +33,14 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 	var result = make([]model.AudioPart, 0, 2)
 
 	firstPartName := uuid.New()
-
 	start := audioPartToSplit.Start
-	startStr := s.convertTimeToString(start)
-
 	splitPoint := s.ConvertTimeFromString(splitPointStr)
-	s.logger.Info("splitPoint: ", splitPoint)
+	firstPartEnd := splitPoint - start
 
-	s.logger.Info("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
-		"-ss", startStr, "-t", fmt.Sprintf("%02d:%02d:%02d.%03d", int(duration.Hours()), int(duration.Minutes())%60,
-			int(duration.Seconds())%60, int(duration.Milliseconds())%60),
-		s.pathForMedia+firstPartName.String()+".wav")
+	s.logger.Info("-ss ", "00:00:00.000", " -t ", s.convertTimeToString(firstPartEnd), s.pathForMedia+firstPartName.String()+".wav")
 
 	_, err := exec.Command("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
-		"-ss", startStr, "-t", fmt.Sprintf("%02d:%02d:%02d.%03d", int(duration.Hours()), int(duration.Minutes())%60,
-			int(duration.Seconds())%60, int(duration.Milliseconds())%60),
+		"-ss", "00:00:00.000", "-t", s.convertTimeToString(firstPartEnd),
 		s.pathForMedia+firstPartName.String()+".wav").Output()
 	if err != nil {
 		return nil, err
@@ -62,12 +55,12 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 	})
 
 	secondPartName := uuid.New()
-	s.logger.Info("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
-		"-ss", s.convertTimeToString(splitPoint+s.convertDurationToInt64(duration)), "-t", s.convertTimeToString(audioPartToSplit.Duration-splitPoint),
+	durationInt := s.convertDurationToInt64(duration)
+	s.logger.Info("-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(audioPartToSplit.Duration-firstPartEnd-durationInt),
 		s.pathForMedia+secondPartName.String()+".wav")
 
 	_, err = exec.Command("ffmpeg", "-i", audioPartToSplit.Path, "-vn", "-acodec", "pcm_s16le",
-		"-ss", s.convertTimeToString(splitPoint+s.convertDurationToInt64(duration)), "-t", s.convertTimeToString(audioPartToSplit.Duration-splitPoint),
+		"-ss ", s.convertTimeToString(firstPartEnd+durationInt), " -t ", s.convertTimeToString(audioPartToSplit.Duration-firstPartEnd-durationInt),
 		s.pathForMedia+secondPartName.String()+".wav").Output()
 	if err != nil {
 		return nil, err
@@ -77,7 +70,7 @@ func (s *MediaServiceImpl) SplitAudio(audioPartToSplit model.AudioPart, splitPoi
 		PartId:    uuid.New(),
 		ProjectId: audioPartToSplit.ProjectId,
 		Start:     splitPoint + s.convertDurationToInt64(duration),
-		Duration:  audioPartToSplit.Duration - splitPoint,
+		Duration:  audioPartToSplit.Duration - firstPartEnd - durationInt,
 		Text:      "",
 		Path:      secondPartName.String() + ".wav",
 	})
