@@ -115,7 +115,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	}
 
 	for i, _ := range audioPartsAfterSplitPoint {
-		audioPartsAfterSplitPoint[i].Duration += durationInt
+		audioPartsAfterSplitPoint[i].Start += durationInt
 	}
 
 	audioPartsAfterSplitPoint = append(audioPartsAfterSplitPoint, splittedParts...)
