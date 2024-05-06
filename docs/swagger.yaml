@@ -26,6 +26,8 @@ definitions:
     properties:
       splitPoint:
         type: string
+      text:
+        type: string
     type: object
   model.Image:
     properties:
@@ -319,6 +321,81 @@ paths:
       summary: Get final audio
       tags:
       - Audio
+  /api/projects/{projectId}/audio-part/{audioPartId}:
+    delete:
+      description: Delete audio part
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Audio part Id
+        in: path
+        name: audioPartId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete audio part
+      tags:
+      - Audio part
+    put:
+      consumes:
+      - application/json
+      description: Change text comment for chosen audio part
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Audio part Id
+        in: path
+        name: audioPartId
+        required: true
+        type: string
+      - description: New text for comment
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/model.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Change text comment
+      tags:
+      - Audio part
   /api/projects/{projectId}/image/comment:
     post:
       consumes:

@@ -63,6 +63,20 @@ func (h *Handler) DeleteAudioPart(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "successfully deleted"})
 }
 
+// ChangeCommentText godoc
+// @Summary      Change text comment
+// @Description  Change text comment for chosen audio part
+// @Tags         Audio part
+// @Accept       json
+// @Produce      json
+// @Param        projectId  path  string  true  "Project Id"
+// @Param        audioPartId  path  string  true  "Audio part Id"
+// @Param        comment  body  model.Comment  true  "New text for comment"
+// @Success      200  {object}  map[string]any
+// @Failure      400  {object}  error
+// @Failure      401  {object}  error
+// @Failure      500  {object}  error
+// @Router       /api/projects/{projectId}/audio-part/{audioPartId} [put]
 func (h *Handler) ChangeCommentText(context *gin.Context) {
 	projectIdStr := context.Param("projectId")
 	projectId, err := uuid.Parse(projectIdStr)

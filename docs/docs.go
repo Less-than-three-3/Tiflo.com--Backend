@@ -372,6 +372,114 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/audio-part/{audioPartId}": {
+            "put": {
+                "description": "Change text comment for chosen audio part",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Audio part"
+                ],
+                "summary": "Change text comment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project Id",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Audio part Id",
+                        "name": "audioPartId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New text for comment",
+                        "name": "comment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Comment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete audio part",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Audio part"
+                ],
+                "summary": "Delete audio part",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project Id",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Audio part Id",
+                        "name": "audioPartId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/image/comment": {
             "post": {
                 "description": "Create tiflo comment for given image",
@@ -606,6 +714,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "splitPoint": {
+                    "type": "string"
+                },
+                "text": {
                     "type": "string"
                 }
             }
