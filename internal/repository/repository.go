@@ -30,8 +30,8 @@ type Repository interface {
 
 	GetAudioPartBySplitPoint(context context.Context, splitPoint int64, projectId uuid.UUID) (model.AudioPart, error)
 	GetAudioPartsAfterSplitPoint(context context.Context, splitPoint int64, projectId uuid.UUID) ([]model.AudioPart, error)
-	UpdateAudioParts(context context.Context, audioPart model.AudioPart) error
-	DeleteAudioPart(context context.Context, audioPart model.AudioPart) error
+	UpdateAudioPart(context context.Context, audioPart model.AudioPart) error
+	DeleteAudioPart(context context.Context, audioPart model.AudioPart) (model.AudioPart, error)
 }
 
 type RepositoryPostgres struct {

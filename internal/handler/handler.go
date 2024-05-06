@@ -172,6 +172,7 @@ func (h *Handler) InitRouter() *gin.Engine {
 
 			projectsRouter.POST("/:projectId/voice", h.VoiceText)
 			projectsRouter.DELETE("/:projectId/audio-part/:audioPartId", h.DeleteAudioPart)
+			projectsRouter.PUT("/:projectId/audio-part/:audioPartId", h.ChangeCommentText)
 			projectsRouter.POST("/:projectId/video/comment", h.CreateComment)
 			projectsRouter.POST("/:projectId/image/comment", h.ImageToText)
 

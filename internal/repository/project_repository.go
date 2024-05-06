@@ -23,7 +23,7 @@ func (r *RepositoryPostgres) CreateProject(context context.Context, userId uuid.
 	return newProject, nil
 }
 
-func (r *RepositoryPostgres) UpdateAudioParts(context context.Context, audioPart model.AudioPart) error {
+func (r *RepositoryPostgres) UpdateAudioPart(context context.Context, audioPart model.AudioPart) error {
 	var partId uuid.UUID
 	query := `INSERT INTO "audio_part" (part_id, project_id, start, duration, text, path)
 			VALUES
@@ -44,6 +44,19 @@ func (r *RepositoryPostgres) UpdateAudioParts(context context.Context, audioPart
 
 func (r *RepositoryPostgres) RenameProject(context context.Context, project model.Project) error {
 	query := `UPDATE "project" SET name=$1 WHERE project_id=$2 AND user_id=$3 RETURNING project_id, name, user_id;`
+	var newProject model.Project
+
+	row := r.db.QueryRow(context, query, project.Name, project.ProjectId, project.UserId)
+	if err := row.Scan(&newProject.ProjectId, &newProject.Name, &newProject.UserId); err != nil {
+		r.logger.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func (r *RepositoryPostgres) ChangeCommentText(context context.Context, project model.Project) error {
+	query := `UPDATE audio_part SET text=$1 WHERE project_id=$2 AND part_id=$3 RETURNING part_id;`
 	var newProject model.Project
 
 	row := r.db.QueryRow(context, query, project.Name, project.ProjectId, project.UserId)
@@ -188,18 +201,18 @@ func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, s
 	return audioPart, nil
 }
 
-func (r *RepositoryPostgres) DeleteAudioPart(context context.Context, audioPart model.AudioPart) error {
+func (r *RepositoryPostgres) DeleteAudioPart(context context.Context, audioPart model.AudioPart) (model.AudioPart, error) {
 	query := `
-	DELETE FROM audio_part WHERE part_id = $1 AND project_id=$2 RETURNING part_id;
+	DELETE FROM audio_part WHERE part_id = $1 AND project_id=$2 RETURNING part_id, duration, start, text, path;
 	`
 
 	row := r.db.QueryRow(context, query, audioPart.PartId, audioPart.ProjectId)
-	if err := row.Scan(&audioPart.PartId); err != nil {
+	if err := row.Scan(&audioPart.PartId, &audioPart.Duration, &audioPart.Start, &audioPart.Text, &audioPart.Path); err != nil {
 		r.logger.Error(err)
-		return err
+		return audioPart, err
 	}
 
-	return nil
+	return audioPart, nil
 }
 
 func (r *RepositoryPostgres) GetAudioPartsAfterSplitPoint(context context.Context, splitPoint int64,

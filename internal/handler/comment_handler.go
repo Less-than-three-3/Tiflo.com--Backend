@@ -91,7 +91,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
-	err = h.repo.DeleteAudioPart(context.Request.Context(), model.AudioPart{PartId: audioPartToSplit.PartId, ProjectId: projectId})
+	_, err = h.repo.DeleteAudioPart(context.Request.Context(), model.AudioPart{PartId: audioPartToSplit.PartId, ProjectId: projectId})
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -123,7 +123,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	audioPartsAfterSplitPoint = append(audioPartsAfterSplitPoint, splittedParts...)
 	h.logger.Info("len(audioPartsAfterSplitPoint) ", len(audioPartsAfterSplitPoint))
 	for _, part := range audioPartsAfterSplitPoint {
-		err = h.repo.UpdateAudioParts(context.Request.Context(), part)
+		err = h.repo.UpdateAudioPart(context.Request.Context(), part)
 		if err != nil {
 			h.logger.Error(err)
 			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
