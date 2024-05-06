@@ -188,13 +188,13 @@ func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, s
 	return audioPart, nil
 }
 
-func (r *RepositoryPostgres) DeleteAudioPart(context context.Context, partId uuid.UUID) error {
+func (r *RepositoryPostgres) DeleteAudioPart(context context.Context, audioPart model.AudioPart) error {
 	query := `
-	DELETE FROM audio_part WHERE part_id = $1 RETURNING part_id;
+	DELETE FROM audio_part WHERE part_id = $1 AND project_id=$2 RETURNING part_id;
 	`
 
-	row := r.db.QueryRow(context, query, partId)
-	if err := row.Scan(&partId); err != nil {
+	row := r.db.QueryRow(context, query, audioPart.PartId, audioPart.ProjectId)
+	if err := row.Scan(&audioPart.PartId); err != nil {
 		r.logger.Error(err)
 		return err
 	}

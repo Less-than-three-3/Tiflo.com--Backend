@@ -52,10 +52,12 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
-	h.logger.Info(frameName)
-	// send to python voice path=PathForMedia+imageName.String()+".png"
-
-	text := "группа мужчин, стоящих рядом с черной машиной. Они одеты в синюю форму, и автомобиль кажется BMW. Мужчины расположены перед машиной, а сцена происходит на грунтовой дороге."
+	text, err := h.pythonClient.ImageToText(context.Request.Context(), PathForMedia+frameName.String()+".png")
+	if err != nil {
+		h.logger.Error(err)
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
 
 	path, err := h.pythonClient.VoiceTheText(context.Request.Context(), text)
 	if err != nil {
@@ -89,7 +91,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
-	err = h.repo.DeleteAudioPart(context.Request.Context(), audioPartToSplit.PartId)
+	err = h.repo.DeleteAudioPart(context.Request.Context(), model.AudioPart{PartId: audioPartToSplit.PartId, ProjectId: projectId})
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})

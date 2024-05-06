@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS audio_part
     part_id    uuid NOT NULL PRIMARY KEY default gen_random_uuid(),
     project_id uuid
         constraint project_id_fk
-            references project (project_id),
+            references project (project_id) ON DELETE CASCADE,
     start      int,
     duration   int,
     text       TEXT,
