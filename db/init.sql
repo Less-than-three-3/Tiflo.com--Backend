@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS "user"
 CREATE TABLE IF NOT EXISTS project
 (
     project_id uuid PRIMARY KEY default gen_random_uuid(),
-    video_path       TEXT,
-    audio_path       TEXT,
+    video_path       TEXT default '',
+    audio_path       TEXT default '',
     user_id    uuid
         constraint user_id_fk
             references "user" (user_id),
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS audio_part
             references project (project_id) ON DELETE CASCADE,
     start      int,
     duration   int,
-    text       TEXT,
-    path       TEXT
+    text       TEXT default '',
+    path       TEXT default ''
 );
 
 CREATE OR REPLACE FUNCTION increment_project_name()
