@@ -82,9 +82,7 @@ func NewHandler(logger *logrus.Logger) *Handler {
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		logger.Info("connected to voice2text")
-
 		voice2textClient := pb.NewAIServiceClient(conn)
 
 		image2textAddress := vp.GetString("python.image2text.address")
@@ -94,8 +92,6 @@ func NewHandler(logger *logrus.Logger) *Handler {
 		}
 
 		logger.Info("connected to image2text")
-		conn = nil
-
 		image2textClient := pb.NewImageCaptioningClient(conn)
 
 		pythonCl = pythonClient.NewPythonClient(logger, voice2textClient, image2textClient)
