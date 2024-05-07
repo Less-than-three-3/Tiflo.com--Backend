@@ -205,12 +205,15 @@ func (r *RepositoryPostgres) DeleteAudioPart(context context.Context, audioPart 
 	query := `
 	DELETE FROM audio_part WHERE part_id = $1 AND project_id=$2 RETURNING part_id, duration, start, text, path;
 	`
+	var path, text sql.NullString
 
 	row := r.db.QueryRow(context, query, audioPart.PartId, audioPart.ProjectId)
-	if err := row.Scan(&audioPart.PartId, &audioPart.Duration, &audioPart.Start, &audioPart.Text, &audioPart.Path); err != nil {
+	if err := row.Scan(&audioPart.PartId, &audioPart.Duration, &audioPart.Start, &text, &path); err != nil {
 		r.logger.Error(err)
 		return audioPart, err
 	}
+	audioPart.Text = text.String
+	audioPart.Path = path.String
 
 	return audioPart, nil
 }
@@ -226,7 +229,6 @@ func (r *RepositoryPostgres) GetAudioPartsAfterSplitPoint(context context.Contex
 
 	var audioParts []model.AudioPart
 	rows, err := r.db.Query(context, query, projectId, splitPoint)
-	r.logger.Error("GetAudioPartsAfterSplitPoint")
 	if err != nil && !errors.Is(pgx.ErrNoRows, err) {
 		return nil, err
 	}
