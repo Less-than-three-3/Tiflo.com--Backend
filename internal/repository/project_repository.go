@@ -11,11 +11,11 @@ import (
 )
 
 func (r *RepositoryPostgres) CreateProject(context context.Context, userId uuid.UUID) (model.Project, error) {
-	query := `INSERT INTO "project"(user_id) VALUES ($1) RETURNING project_id, name, user_id;`
+	query := `INSERT INTO "project"(user_id) VALUES ($1) RETURNING project_id, name, user_id, created;`
 	var newProject model.Project
 
 	row := r.db.QueryRow(context, query, userId)
-	if err := row.Scan(&newProject.ProjectId, &newProject.Name, &newProject.UserId); err != nil {
+	if err := row.Scan(&newProject.ProjectId, &newProject.Name, &newProject.UserId, &newProject.Created); err != nil {
 		r.logger.Error(err)
 		return model.Project{}, err
 	}
@@ -131,6 +131,7 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 		p.name,
 		p.video_path,
 		p.audio_path,
+		p.created,
 		ap.part_id,
 		ap.start,
 		ap.duration,
@@ -154,14 +155,16 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 	for rows.Next() {
 		var ap model.AudioPart
 		var audioPath, audioText sql.NullString
+		var created sql.NullTime
 		var duration, start sql.NullInt64
 
-		err = rows.Scan(&project.Name, &projectVideoPath, &projectAudioPath, &ap.PartId, &start, &duration, &audioText, &audioPath)
+		err = rows.Scan(&project.Name, &projectVideoPath, &projectAudioPath, &created, &ap.PartId, &start, &duration, &audioText, &audioPath)
 		if err != nil {
 			return model.Project{}, err
 		}
 		project.VideoPath = projectVideoPath.String
 		project.AudioPath = projectAudioPath.String
+		project.Created = created.Time
 		ap.Path = audioPath.String
 		ap.Start = start.Int64
 		ap.Duration = duration.Int64
@@ -176,6 +179,36 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 	}
 
 	return project, nil
+}
+
+func (r *RepositoryPostgres) GetAudioPart(context context.Context, part model.AudioPart) (model.AudioPart, error) {
+	query := `
+	SELECT 
+		part_id,
+		start,
+		project_id,
+		duration,
+		text,
+		path
+	FROM 
+		audio_part WHERE part_id=$1`
+
+	rows, err := r.db.Query(context, query, part.PartId)
+	if err != nil {
+		return model.AudioPart{}, err
+	}
+	defer rows.Close()
+
+	row := r.db.QueryRow(context, query, part.PartId)
+	if err = row.Scan(&part.PartId, &part.ProjectId, &part.Start, &part.Duration, &part.Path); err != nil {
+		if errors.Is(pgx.ErrNoRows, err) {
+			r.logger.Error(err)
+			return model.AudioPart{}, model.NotFound
+		}
+		return model.AudioPart{}, err
+	}
+
+	return part, nil
 }
 
 func (r *RepositoryPostgres) GetAudioPartBySplitPoint(context context.Context, splitPoint int64,
@@ -253,6 +286,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 	query := `
 	SELECT 
 		p.project_id,
+		p.created,
 		p.name,
 		p.video_path,
 		p.audio_path,
@@ -281,6 +315,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 		var projectId uuid.UUID
 		var name string
 		var userId uuid.UUID
+		var created sql.NullTime
 		var partId uuid.UUID
 		var projectPath sql.NullString
 		var projectAudioPath sql.NullString
@@ -288,7 +323,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 		var audioPath, audioText sql.NullString
 		var duration, start sql.NullInt64
 
-		err = rows.Scan(&projectId, &name, &projectPath, &projectAudioPath, &userId, &partId, &start, &duration, &audioText, &audioPath)
+		err = rows.Scan(&projectId, &created, &name, &projectPath, &projectAudioPath, &userId, &partId, &start, &duration, &audioText, &audioPath)
 		if err != nil {
 			return nil, err
 		}
@@ -301,6 +336,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 				VideoPath:  projectPath.String,
 				AudioPath:  projectAudioPath.String,
 				UserId:     userId,
+				Created:    created.Time,
 				AudioParts: []model.AudioPart{},
 			}
 			projects[projectId] = project

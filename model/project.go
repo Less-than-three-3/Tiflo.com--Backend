@@ -1,6 +1,9 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type AudioPart struct {
 	PartId    uuid.UUID `json:"partId"`
@@ -13,6 +16,7 @@ type AudioPart struct {
 
 type Project struct {
 	ProjectId  uuid.UUID   `json:"projectId" binding:"required"`
+	Created    time.Time   `json:"created"`
 	Name       string      `json:"name" binding:"required"`
 	VideoPath  string      `json:"path" binding:"required"`
 	AudioPath  string      `json:"-"`

@@ -30,8 +30,10 @@ type Repository interface {
 
 	GetAudioPartBySplitPoint(context context.Context, splitPoint int64, projectId uuid.UUID) (model.AudioPart, error)
 	GetAudioPartsAfterSplitPoint(context context.Context, splitPoint int64, projectId uuid.UUID) ([]model.AudioPart, error)
+
 	UpdateAudioPart(context context.Context, audioPart model.AudioPart) error
 	DeleteAudioPart(context context.Context, audioPart model.AudioPart) (model.AudioPart, error)
+	GetAudioPart(context context.Context, part model.AudioPart) (model.AudioPart, error)
 }
 
 type RepositoryPostgres struct {
@@ -96,16 +98,3 @@ func (r *RepositoryPostgres) GetUser(context context.Context, user model.UserLog
 
 	return userInfo, nil
 }
-
-//func (r *RepositoryPostgres) GetImageProject(context context.Context, project model.ImageProject) (model.ImageProject, error) {
-//	var projectInfo model.ImageProject
-//	query := `SELECT user_id, project_name, image_name, project_id FROM project WHERE project_id=$1;`
-//
-//	row := r.db.QueryRow(context, query, GetProjectId())
-//	if err := row.Scan(&projectInfo.UserId, &projectInfo.Name, &projectInfo.Image); err != nil {
-//		r.logger.Error(err)
-//		return model.ImageProject{}, err
-//	}
-//
-//	return projectInfo, nil
-//}

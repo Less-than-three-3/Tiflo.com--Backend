@@ -31,7 +31,7 @@ func NewManager(signingKey string) (*Manager, error) {
 func (m *Manager) NewJWT(userId uuid.UUID) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &model.JwtClaims{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 		UserId: userId,
