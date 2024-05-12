@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS project
     created    timestamp        default now(),
     video_path TEXT             default '',
     audio_path TEXT             default '',
+    image_path TEXT             default '',
     user_id    uuid
         constraint user_id_fk
             references "user" (user_id),

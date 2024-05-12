@@ -46,13 +46,13 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
-	frameName, err := h.mediaService.ExtractFrame(PathForMedia+project.VideoPath, comment.SplitPoint)
+	frameName, err := h.mediaService.ExtractFrame(PathForMedia+project.VideoPath, comment.VideoTime)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	text, err := h.pythonClient.ImageToText(context.Request.Context(), "/data/"+frameName.String()+".png")
+	text, err := h.pythonClient.ImageToText(context.Request.Context(), "/data/"+frameName)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -107,8 +107,6 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		Path:      path,
 	})
 
-	h.logger.Info("splittedParts", splittedParts)
-
 	audioPartsAfterSplitPoint, err := h.repo.GetAudioPartsAfterSplitPoint(context.Request.Context(), splitPoint, projectId)
 	if err != nil {
 		h.logger.Error(err)
@@ -121,7 +119,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	}
 
 	audioPartsAfterSplitPoint = append(audioPartsAfterSplitPoint, splittedParts...)
-	h.logger.Info("len(audioPartsAfterSplitPoint) ", len(audioPartsAfterSplitPoint))
+
 	for _, part := range audioPartsAfterSplitPoint {
 		err = h.repo.UpdateAudioPart(context.Request.Context(), part)
 		if err != nil {
@@ -136,6 +134,6 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	h.logger.Info("updatedProject ap len: ", len(updatedProject.AudioParts))
+
 	context.JSON(http.StatusOK, updatedProject)
 }

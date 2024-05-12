@@ -20,6 +20,7 @@ type Project struct {
 	Name       string      `json:"name" binding:"required"`
 	VideoPath  string      `json:"path" binding:"required"`
 	AudioPath  string      `json:"-"`
+	ImagePath  string      `json:"previewPath"`
 	UserId     uuid.UUID   `json:"userId" binding:"required"`
 	AudioParts []AudioPart `json:"audioParts" binding:"omitempty"`
 }

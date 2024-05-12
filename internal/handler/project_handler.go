@@ -66,9 +66,17 @@ func (h *Handler) UpdateProjectName(context *gin.Context) {
 		return
 	}
 
+	name := ProjectUpdate{}
+
+	if err = context.BindJSON(&name); err != nil {
+		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	if err = h.repo.RenameProject(context.Request.Context(), model.Project{
 		ProjectId: projectId,
 		UserId:    userId,
+		Name:      name.Name,
 	}); err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -80,7 +88,15 @@ func (h *Handler) UpdateProjectName(context *gin.Context) {
 
 const (
 	PathForMedia = "/media/"
+	previewTime  = "00:00:01.000"
 )
+
+var availableFormats = map[string]bool{
+	".jpeg": true,
+	".jpg":  true,
+	".mp4":  true,
+	".png":  true,
+}
 
 // UploadMedia godoc
 // @Summary      Upload media file for project
@@ -113,6 +129,12 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 
 	for _, file := range files {
 		extension := filepath.Ext(file.Filename)
+		if val, ok := availableFormats[extension]; !ok || !val {
+			h.logger.Printf("Wrong file extension: %v", val)
+			context.String(http.StatusBadRequest, "Неверный формат файла, доступны: .jpeg, .jpg, .png, .mp4")
+			return
+		}
+
 		if err = context.SaveUploadedFile(file, PathForMedia+filename.String()+extension); err != nil {
 			h.logger.Printf("Failed to save file: %s", err)
 			context.String(http.StatusInternalServerError, "Failed to save file")
@@ -120,6 +142,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 		}
 
 		var audio []model.AudioPart
+		var project model.Project
 
 		if extension == ".mp4" {
 			err = h.mediaService.GetAudioFromVideo(filename.String(), extension)
@@ -128,7 +151,6 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 				return
 			}
 
-			h.logger.Info(filename.String())
 			_, durationInt, err := h.mediaService.GetAudioDurationWav(filename.String() + ".wav")
 			if err != nil {
 				context.String(http.StatusInternalServerError, "Failed to get time duration")
@@ -143,15 +165,25 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 				Text:      "",
 				Path:      filename.String() + ".wav",
 			})
+
+			project.AudioParts = audio
+			project.AudioPath = filename.String() + ".wav"
+
+			frameName, err := h.mediaService.ExtractFrame(PathForMedia+filename.String()+extension, previewTime)
+			if err != nil {
+				context.String(http.StatusInternalServerError, "Failed to get preview")
+				return
+			}
+
+			project.ImagePath = frameName
+		} else {
+			project.ImagePath = filename.String() + extension
 		}
 
-		if err = h.repo.UploadMedia(context.Request.Context(), model.Project{
-			ProjectId:  projectId,
-			VideoPath:  filename.String() + extension,
-			AudioPath:  filename.String() + ".wav",
-			UserId:     userId,
-			AudioParts: audio,
-		}); err != nil {
+		project.ProjectId = projectId
+		project.UserId = userId
+
+		if err = h.repo.UploadMedia(context.Request.Context(), project); err != nil {
 			context.String(http.StatusInternalServerError, "Failed to save file")
 			return
 		}
@@ -253,25 +285,6 @@ func (h *Handler) GetProjects(context *gin.Context) {
 
 	context.JSON(http.StatusOK, projects)
 }
-
-//func (h *Handler) AddTifloCommentToImage(context *gin.Context) {
-//	projectIdStr := context.Param("projectId")
-//	projectId, err := uuid.Parse(projectIdStr)
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-//		return
-//	}
-//
-//	userId, err := model.GetUserId(context)
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
-//		return
-//	}
-//
-//	// h.pythonClient.GetComment()
-//
-//	context.JSON(http.StatusOK, "success")
-//}
 
 // ConcatAudio godoc
 // @Summary      Get final audio

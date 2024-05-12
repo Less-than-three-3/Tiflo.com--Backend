@@ -1,7 +1,6 @@
 package ffmpeg
 
 import (
-	"github.com/google/uuid"
 	"tiflo/model"
 	"time"
 
@@ -18,7 +17,7 @@ type MediaService interface {
 	GetAudioDurationMp3(audioPath string) (time.Duration, int64, error)
 
 	GetAudioFromVideo(filename string, extension string) error
-	ExtractFrame(videoPath string, timestamp string) (uuid.UUID, error)
+	ExtractFrame(videoPath string, timestamp string) (string, error)
 }
 
 type MediaServiceImpl struct {
