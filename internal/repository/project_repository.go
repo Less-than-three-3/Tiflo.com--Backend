@@ -135,6 +135,7 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 		p.name,
 		p.video_path,
 		p.audio_path,
+		p.image_path,
 		p.created,
 		ap.part_id,
 		ap.start,
@@ -162,7 +163,7 @@ func (r *RepositoryPostgres) GetProject(context context.Context, project model.P
 		var created sql.NullTime
 		var duration, start sql.NullInt64
 
-		err = rows.Scan(&project.Name, &projectVideoPath, &projectAudioPath, &created, &ap.PartId, &start, &duration, &audioText, &audioPath)
+		err = rows.Scan(&project.Name, &projectVideoPath, &projectAudioPath, &project.AudioPath, &created, &ap.PartId, &start, &duration, &audioText, &audioPath)
 		if err != nil {
 			return model.Project{}, err
 		}
@@ -294,6 +295,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 		p.name,
 		p.video_path,
 		p.audio_path,
+		p.image_path,
 		p.user_id,
 		ap.part_id,
 		ap.start,
@@ -323,11 +325,12 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 		var partId uuid.UUID
 		var projectPath sql.NullString
 		var projectAudioPath sql.NullString
+		var projectImagePath sql.NullString
 
 		var audioPath, audioText sql.NullString
 		var duration, start sql.NullInt64
 
-		err = rows.Scan(&projectId, &created, &name, &projectPath, &projectAudioPath, &userId, &partId, &start, &duration, &audioText, &audioPath)
+		err = rows.Scan(&projectId, &created, &name, &projectPath, &projectAudioPath, &projectImagePath, &userId, &partId, &start, &duration, &audioText, &audioPath)
 		if err != nil {
 			return nil, err
 		}
@@ -339,6 +342,7 @@ func (r *RepositoryPostgres) GetProjectsList(context context.Context, userId uui
 				Name:       name,
 				VideoPath:  projectPath.String,
 				AudioPath:  projectAudioPath.String,
+				ImagePath:  projectImagePath.String,
 				UserId:     userId,
 				Created:    created.Time,
 				AudioParts: []model.AudioPart{},

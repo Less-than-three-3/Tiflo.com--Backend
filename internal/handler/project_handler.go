@@ -182,6 +182,7 @@ func (h *Handler) UploadMedia(context *gin.Context) {
 
 		project.ProjectId = projectId
 		project.UserId = userId
+		project.VideoPath = filename.String() + extension
 
 		if err = h.repo.UploadMedia(context.Request.Context(), project); err != nil {
 			context.String(http.StatusInternalServerError, "Failed to save file")
