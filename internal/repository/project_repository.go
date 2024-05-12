@@ -29,7 +29,11 @@ func (r *RepositoryPostgres) UpdateAudioPart(context context.Context, audioPart 
 			VALUES
     		($1, $2, $3, $4, $5, $6)
 			ON CONFLICT (part_id) DO UPDATE
-			SET start = EXCLUDED.start RETURNING part_id;
+			SET start = EXCLUDED.start, 
+			    duration = EXCLUDED.duration, 
+			    text = EXCLUDED.text,
+			    path = EXCLUDED.path
+			    RETURNING part_id;
 	`
 
 	row := r.db.QueryRow(context, query, audioPart.PartId, audioPart.ProjectId, audioPart.Start,

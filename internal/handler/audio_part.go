@@ -4,107 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
+	"sort"
 	"tiflo/model"
 )
-
-//// DeleteAudioPart godoc
-//// @Summary      Delete audio part
-//// @Description  Delete audio part
-//// @Tags         Audio part
-//// @Produce      json
-//// @Param        projectId    path  string  true  "Project Id"
-//// @Param        audioPartId  path  string  true  "Audio part Id"
-//// @Success      200  {object}  map[string]any
-//// @Failure      400  {object}  error
-//// @Failure      401  {object}  error
-//// @Failure      500  {object}  error
-//// @Router       /api/projects/{projectId}/audio-part/{audioPartId} [delete]
-//func (h *Handler) DeleteAudioPart(context *gin.Context) {
-//	projectIdStr := context.Param("projectId")
-//	projectId, err := uuid.Parse(projectIdStr)
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-//		return
-//	}
-//
-//	audioPartIdStr := context.Param("audioPartId")
-//	audioPartId, err := uuid.Parse(audioPartIdStr)
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-//		return
-//	}
-//
-//	userId, err := model.GetUserId(context)
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
-//		return
-//	}
-//
-//	project, err := h.repo.GetProject(context.Request.Context(), model.Project{ProjectId: projectId, UserId: userId})
-//	if err != nil {
-//		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-//		return
-//	}
-//
-//	sort.SliceStable(project.AudioParts, func(i, j int) bool {
-//		return project.AudioParts[i].Start < project.AudioParts[j].Start
-//	})
-//
-//	partsToConcat := make([]model.AudioPart, 0, 2)
-//	for i, v := range project.AudioParts {
-//		if v.PartId == audioPartId && i != 0 {
-//			partsToConcat = append(partsToConcat, project.AudioParts[i-1], project.AudioParts[i+1])
-//			h.logger.Info("partsToConcat:", partsToConcat)
-//
-//			path, err := h.mediaService.ConcatAudio(partsToConcat)
-//			if err != nil {
-//				context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-//				return
-//			}
-//
-//			concatedPart := model.AudioPart{
-//				PartId:    project.AudioParts[i-1].PartId,
-//				ProjectId: projectId,
-//				Start:     project.AudioParts[i-1].Start,
-//				Duration:  project.AudioParts[i-1].Duration + project.AudioParts[i+1].Duration,
-//				Text:      "",
-//				Path:      path + ".wav",
-//			}
-//
-//			_, err = h.repo.DeleteAudioPart(context.Request.Context(), project.AudioParts[i+1])
-//			if err != nil {
-//				context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-//				return
-//			}
-//
-//			audioPartsAfterSplitPoint, err := h.repo.GetAudioPartsAfterSplitPoint(context.Request.Context(), v.Start, projectId)
-//			if err != nil {
-//				h.logger.Error(err)
-//				context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-//				return
-//			}
-//
-//			for i, _ := range audioPartsAfterSplitPoint {
-//				audioPartsAfterSplitPoint[i].Start -= v.Duration
-//			}
-//
-//			for _, part := range audioPartsAfterSplitPoint {
-//				err = h.repo.UpdateAudioPart(context.Request.Context(), part)
-//				if err != nil {
-//					h.logger.Error(err)
-//					context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-//					return
-//				}
-//			}
-//
-//			//TODO
-//
-//			break
-//		}
-//	}
-//
-//	context.JSON(http.StatusOK, gin.H{"message": "successfully deleted"})
-//}
 
 // DeleteAudioPart godoc
 // @Summary      Delete audio part
@@ -133,29 +35,77 @@ func (h *Handler) DeleteAudioPart(context *gin.Context) {
 		return
 	}
 
-	part, err := h.repo.DeleteAudioPart(context.Request.Context(), model.AudioPart{PartId: audioPartId, ProjectId: projectId})
+	userId, err := model.GetUserId(context)
 	if err != nil {
-		context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		return
 	}
 
-	audioPartsAfterSplitPoint, err := h.repo.GetAudioPartsAfterSplitPoint(context.Request.Context(), part.Start, projectId)
+	project, err := h.repo.GetProject(context.Request.Context(), model.Project{ProjectId: projectId, UserId: userId})
 	if err != nil {
-		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	for i, _ := range audioPartsAfterSplitPoint {
-		audioPartsAfterSplitPoint[i].Start -= part.Duration
-	}
+	sort.SliceStable(project.AudioParts, func(i, j int) bool {
+		return project.AudioParts[i].Start < project.AudioParts[j].Start
+	})
 
-	for _, part := range audioPartsAfterSplitPoint {
-		err = h.repo.UpdateAudioPart(context.Request.Context(), part)
-		if err != nil {
-			h.logger.Error(err)
-			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-			return
+	partsToConcat := make([]model.AudioPart, 0, 2)
+	for i, v := range project.AudioParts {
+		if v.PartId == audioPartId && i != 0 {
+			partsToConcat = append(partsToConcat, project.AudioParts[i-1], project.AudioParts[i+1])
+			h.logger.Info("partsToConcat:", partsToConcat)
+
+			path, err := h.mediaService.ConcatAudio(partsToConcat)
+			if err != nil {
+				context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+				return
+			}
+
+			concatedPart := model.AudioPart{
+				PartId:    project.AudioParts[i-1].PartId,
+				ProjectId: projectId,
+				Start:     project.AudioParts[i-1].Start,
+				Duration:  project.AudioParts[i-1].Duration + project.AudioParts[i+1].Duration,
+				Text:      "",
+				Path:      path,
+			}
+
+			_, err = h.repo.DeleteAudioPart(context.Request.Context(), project.AudioParts[i+1])
+			if err != nil {
+				context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+				return
+			}
+
+			_, err = h.repo.DeleteAudioPart(context.Request.Context(), v)
+			if err != nil {
+				context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+				return
+			}
+
+			audioPartsAfterSplitPoint, err := h.repo.GetAudioPartsAfterSplitPoint(context.Request.Context(), v.Start, projectId)
+			if err != nil {
+				h.logger.Error(err)
+				context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+				return
+			}
+
+			for j, _ := range audioPartsAfterSplitPoint {
+				audioPartsAfterSplitPoint[j].Start -= v.Duration
+			}
+
+			audioPartsAfterSplitPoint = append(audioPartsAfterSplitPoint, concatedPart)
+			for _, part := range audioPartsAfterSplitPoint {
+				err = h.repo.UpdateAudioPart(context.Request.Context(), part)
+				if err != nil {
+					h.logger.Error(err)
+					context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+					return
+				}
+			}
+
+			break
 		}
 	}
 

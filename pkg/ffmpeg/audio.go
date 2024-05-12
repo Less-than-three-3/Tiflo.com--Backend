@@ -222,5 +222,5 @@ func (s *MediaServiceImpl) ConcatAudio(audioParts []model.AudioPart) (string, er
 		log.Printf("FFmpeg command failed: %v", err)
 	}
 
-	return concatAudio.String(), nil
+	return concatAudio.String() + ".wav", nil
 }
