@@ -73,10 +73,10 @@ func (r *RepositoryPostgres) ChangeCommentText(context context.Context, project 
 }
 
 func (r *RepositoryPostgres) UploadMedia(context context.Context, project model.Project) error {
-	query := `UPDATE "project" SET video_path=$1, audio_path=$2 WHERE user_id=$3 AND project_id=$4 RETURNING video_path;`
+	query := `UPDATE "project" SET video_path=$1, audio_path=$2, image_path=$3 WHERE user_id=$4 AND project_id=$5 RETURNING video_path;`
 
 	var path string
-	row := r.db.QueryRow(context, query, project.VideoPath, project.AudioPath, project.UserId, project.ProjectId)
+	row := r.db.QueryRow(context, query, project.VideoPath, project.AudioPath, project.ImagePath, project.UserId, project.ProjectId)
 	if err := row.Scan(&path); err != nil {
 		r.logger.Error(err)
 		return err
