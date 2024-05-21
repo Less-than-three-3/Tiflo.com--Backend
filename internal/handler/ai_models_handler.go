@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 	"tiflo/model"
 )
@@ -58,12 +59,36 @@ func (h *Handler) ImageToText(context *gin.Context) {
 		return
 	}
 
+	projectIdStr := context.Param("projectId")
+	projectId, err := uuid.Parse(projectIdStr)
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	text, err := h.pythonClient.ImageToText(context.Request.Context(), "/data/"+imagePath.Name)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 	h.logger.Info(text)
+
+	err = h.repo.SaveProjectAudio(context.Request.Context(), model.Project{
+		ProjectId: projectId,
+		UserId:    uuid.UUID{},
+		AudioParts: []model.AudioPart{{
+			PartId:    uuid.New(),
+			ProjectId: projectId,
+			Start:     0,
+			Duration:  0,
+			Text:      text,
+			Path:      "",
+		}},
+	})
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
 
 	context.JSON(http.StatusOK, text)
 }
