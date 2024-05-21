@@ -100,10 +100,7 @@ func (r *RepositoryPostgres) SaveProjectAudio(context context.Context, project m
 	var projectId uuid.UUID
 	query := `DELETE FROM "audio_part" WHERE project_id=$1 RETURNING project_id;`
 	row := r.db.QueryRow(context, query, project.ProjectId)
-	if err := row.Scan(&projectId); err != nil {
-		r.logger.Error(err)
-		return err
-	}
+	_ = row.Scan(&projectId)
 
 	for _, v := range project.AudioParts {
 		query = `INSERT INTO "audio_part"(part_id, project_id, start, text, path, duration) VALUES ($1, $2, $3, $4, $5, $6) RETURNING project_id;`
