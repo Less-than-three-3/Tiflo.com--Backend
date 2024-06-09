@@ -54,7 +54,7 @@ services:
       - ${MEDIA}:/media
 
 
-image2text:
+  image2text:
     container_name: img2seq_server
     build:
       context: ~/ml-image/Tiflo.com--ML/image2text
