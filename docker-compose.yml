@@ -54,6 +54,7 @@ services:
       - ${FRONT_BUILD}:/dist
       - ${FRONT_REPO}:/icons/src/assets
       - /etc/letsencrypt:/etc/letsencrypt
+      - ${CERTBOT}:/var/www/certbot/:ro
       - ${NGINX_LOGS}:/var/log/nginx
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
       - ${MEDIA}:/media
@@ -61,5 +62,5 @@ services:
   certbot:
     image: certbot/certbot:latest
     volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
+      - ${CERTBOT}:/var/www/certbot/:rw
       - /etc/letsencrypt/:/etc/letsencrypt/:rw
