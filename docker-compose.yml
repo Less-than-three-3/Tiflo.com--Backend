@@ -55,20 +55,20 @@ services:
 
 
   image2text:
-      container_name: img2seq_server
-      build:
-        context: ~/ml-image/Tiflo.com--ML/image2text
-        dockerfile: Dockerfile
-      command: python img_server.py
-      volumes:
-        - ~/ml-image/Tiflo.com--ML/image2text:/app
-        - ~/frontend/public/media:/data
+    container_name: img2seq_server
+    build:
+      context: ~/ml-image/Tiflo.com--ML/image2text
+      dockerfile: Dockerfile
+    command: python img_server.py
+    volumes:
+      - ~/ml-image/Tiflo.com--ML/image2text:/app
+      - ~/frontend/public/media:/data
   
-    text2voice:
-      container_name: model
-      build:
-        context: ~/ml
-        dockerfile: docker/Dockerfile
-      command: python server.py
-      volumes:
-        - ~/ml:/app
+  text2voice:
+    container_name: model
+    build:
+      context: ~/ml
+      dockerfile: docker/Dockerfile
+    command: python server.py
+    volumes:
+      - ~/ml:/app
