@@ -53,7 +53,6 @@ services:
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
       - ${MEDIA}:/media
 
-
   image2text:
     container_name: img2seq_server
     build:
@@ -63,7 +62,7 @@ services:
     volumes:
       - ~/ml-image/Tiflo.com--ML/image2text:/app
       - ~/frontend/public/media:/data
-  
+
   text2voice:
     container_name: model
     build:
