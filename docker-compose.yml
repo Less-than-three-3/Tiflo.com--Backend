@@ -52,3 +52,27 @@ services:
       - ${NGINX_LOGS}:/var/log/nginx
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
       - ${MEDIA}:/media
+
+
+image2text:
+    container_name: img2seq_server
+    build:
+      context: ~/ml-image/Tiflo.com--ML/image2text
+      dockerfile: Dockerfile
+    command: python img_server.py
+    volumes:
+      - ~/ml-image/Tiflo.com--ML/image2text:/app
+      - ~/frontend/public/media:/data
+    ports:
+      - 8090:8080
+
+  text2voice:
+    container_name: model
+    build:
+      context: ~/ml
+      dockerfile: docker/Dockerfile
+    command: python server.py
+    volumes:
+      - ~/ml:/app
+    ports:
+      - 8081:8080
