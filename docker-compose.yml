@@ -57,3 +57,9 @@ services:
       - ${NGINX_LOGS}:/var/log/nginx
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
       - ${MEDIA}:/media
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - /etc/letsencrypt/:/etc/letsencrypt/:rw
