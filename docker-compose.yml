@@ -63,8 +63,6 @@ image2text:
     volumes:
       - ~/ml-image/Tiflo.com--ML/image2text:/app
       - ~/frontend/public/media:/data
-    ports:
-      - 8090:8080
 
   text2voice:
     container_name: model
@@ -74,5 +72,3 @@ image2text:
     command: python server.py
     volumes:
       - ~/ml:/app
-    ports:
-      - 8081:8080
