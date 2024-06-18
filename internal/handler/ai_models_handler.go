@@ -66,7 +66,7 @@ func (h *Handler) ImageToText(context *gin.Context) {
 		return
 	}
 
-	text, err := h.pythonClient.ImageToText(context.Request.Context(), "~/frontend/public/media/"+imagePath.Name)
+	text, err := h.pythonClient.ImageToText(context.Request.Context(), "/home/vavasto/frontend/public/media/"+imagePath.Name)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 		return

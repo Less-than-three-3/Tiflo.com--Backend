@@ -52,7 +52,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
-	text, err := h.pythonClient.ImageToText(context.Request.Context(), "~/frontend/public/media/"+frameName)
+	text, err := h.pythonClient.ImageToText(context.Request.Context(), "/home/vavasto/frontend/public/media/"+frameName)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
