@@ -55,7 +55,7 @@ func (h *Handler) SignIn(context *gin.Context) {
 		return
 	}
 
-	context.SetCookie("AccessToken", "Bearer "+token, 0, "/", "tiflo.tech", false, true)
+	context.SetCookie("AccessToken", "Bearer "+token, 0, "/", "localhost", false, true)
 	context.JSON(http.StatusOK, gin.H{"message": "клиент успешно авторизован", "login": user.Login, "userId": userInfo.UserId})
 }
 
