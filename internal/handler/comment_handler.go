@@ -52,14 +52,21 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		return
 	}
 
-	text, err := h.pythonClient.ImageToText(context.Request.Context(), "/home/vavasto/frontend/public/media/"+frameName)
+	text, err := h.ittClient.ImageToText(context.Request.Context(), "/media/"+frameName)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	path, err := h.pythonClient.VoiceTheText(context.Request.Context(), text)
+	ruText, err := h.en2ruClient.Translate(context.Request.Context(), text)
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	h.logger.Info("Ru text", ruText)
+
+	path, err := h.ttsClient.TextToSpeech(context.Request.Context(), ruText)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -67,8 +74,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 	}
 
 	// get duration
-
-	duration, durationInt, err := h.mediaService.GetAudioDurationWav(path)
+	duration, durationInt, err := h.mediaService.GetAudioDurationMp3(path)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -103,7 +109,7 @@ func (h *Handler) CreateComment(context *gin.Context) {
 		ProjectId: projectId,
 		Start:     splitPoint,
 		Duration:  durationInt,
-		Text:      text,
+		Text:      ruText,
 		Path:      path,
 	})
 

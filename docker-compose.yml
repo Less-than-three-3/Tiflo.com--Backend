@@ -50,25 +50,11 @@ services:
       - ${NGINX_CONF}:/etc/nginx/nginx.conf
       - ${MEDIA}:/media
 
-  # image2text:
-  #   container_name: image2text
+  # tiflocom-itt:
+  #   container_name: tiflocom-itt
   #   build:
-  #     context: ${ML_REPO}/image2text
+  #     context: ${ML_REPO}
   #     dockerfile: Dockerfile
-  #   command: python img_server.py
-  #   volumes:
-  #     - ${ML_REPO}/image2text:/app
-  #     - ${MEDIA}:/data
-  #   ports:
-  #     - 8090:8080
-
-  # text2voice:
-  #   container_name: text2voice
-  #   build:
-  #     context: ${ML_REPO}/text2voice
-  #     dockerfile: docker/Dockerfile
   #   command: python server.py
-  #   volumes:
-  #     - ${ML_REPO}/text2voice:/app
   #   ports:
-  #     - 8086:8080
+  #     - 5000:5000

@@ -29,11 +29,13 @@ func (h *Handler) VoiceText(context *gin.Context) {
 
 	h.logger.Info("VoiceText Handler", textComment.Text)
 
-	path, err := h.pythonClient.VoiceTheText(context.Request.Context(), textComment.Text)
+	path, err := h.ttsClient.TextToSpeech(context.Request.Context(), textComment.Text)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
+	h.logger.Info("VoiceText TextToSpeech done: ", path)
+	// path := "6c454a2b-b805-4b6c-8525-e5b9761d8bba.wav"
 
 	context.JSON(http.StatusOK, path)
 }
@@ -58,20 +60,28 @@ func (h *Handler) ImageToText(context *gin.Context) {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-
+	h.logger.Info("BindJSON")
 	projectIdStr := context.Param("projectId")
 	projectId, err := uuid.Parse(projectIdStr)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	h.logger.Info("Parse")
 
-	text, err := h.pythonClient.ImageToText(context.Request.Context(), "/home/vavasto/frontend/public/media/"+imagePath.Name)
+	text, err := h.ittClient.ImageToText(context.Request.Context(), "/media/"+imagePath.Name)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
-	h.logger.Info(text)
+	h.logger.Info("ImageToText", text)
+
+	ruText, err := h.en2ruClient.Translate(context.Request.Context(), text)
+	if err != nil {
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	h.logger.Info("Ru text", ruText)
 
 	err = h.repo.SaveProjectAudio(context.Request.Context(), model.Project{
 		ProjectId: projectId,
@@ -81,7 +91,7 @@ func (h *Handler) ImageToText(context *gin.Context) {
 			ProjectId: projectId,
 			Start:     0,
 			Duration:  0,
-			Text:      text,
+			Text:      ruText,
 			Path:      "",
 		}},
 	})
@@ -90,5 +100,5 @@ func (h *Handler) ImageToText(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, text)
+	context.JSON(http.StatusOK, ruText)
 }

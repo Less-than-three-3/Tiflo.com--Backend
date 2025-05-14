@@ -166,7 +166,7 @@ func (h *Handler) ChangeCommentText(context *gin.Context) {
 	}
 
 	// voice new text
-	path, err := h.pythonClient.VoiceTheText(context.Request.Context(), comment.Text)
+	path, err := h.ttsClient.TextToSpeech(context.Request.Context(), comment.Text)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -174,7 +174,7 @@ func (h *Handler) ChangeCommentText(context *gin.Context) {
 	}
 
 	// get duration of new text
-	_, durationInt, err := h.mediaService.GetAudioDurationWav(path)
+	_, durationInt, err := h.mediaService.GetAudioDurationMp3(path)
 	if err != nil {
 		h.logger.Error(err)
 		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})

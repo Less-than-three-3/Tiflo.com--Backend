@@ -11,19 +11,18 @@ import (
 	_ "tiflo/docs"
 	"tiflo/internal/repository"
 	"tiflo/pkg/auth"
+	"tiflo/pkg/en2ru"
 	"tiflo/pkg/ffmpeg"
-	"tiflo/pkg/grpc/client"
-	pythonClient "tiflo/pkg/grpc/client"
-	pb "tiflo/pkg/grpc/generated"
 	"tiflo/pkg/hash"
+	"tiflo/pkg/image2text"
 	"tiflo/pkg/redis"
+	"tiflo/pkg/text2speech"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
-	"google.golang.org/grpc"
 )
 
 type Handler struct {
@@ -34,8 +33,10 @@ type Handler struct {
 
 	hasher       hash.PasswordHasher
 	tokenManager auth.TokenManager
-	pythonClient client.AI
 	mediaService ffmpeg.MediaService
+	ittClient    *image2text.ImageToTextClient
+	ttsClient    *text2speech.TextToSpeechClient
+	en2ruClient  *en2ru.EnToRuClient
 }
 
 func initConfig(vp *viper.Viper, configPath string) error {
@@ -75,26 +76,19 @@ func NewHandler(logger *logrus.Logger) *Handler {
 		repos = repository.NewRepository(logger, db)
 	}
 
-	var pythonCl *pythonClient.PythonClient
+	var image2textClient *image2text.ImageToTextClient
+	var text2speechClient *text2speech.TextToSpeechClient
+	var en2ruClient *en2ru.EnToRuClient
 	if *pythonNeeded {
-		voice2textAddress := vp.GetString("python.voice2text.address")
-		conn, err := grpc.Dial(voice2textAddress, grpc.WithInsecure(), grpc.WithBlock())
-		if err != nil {
-			log.Fatal(err)
-		}
-		logger.Info("connected to voice2text")
-		voice2textClient := pb.NewAIServiceClient(conn)
-
 		image2textAddress := vp.GetString("python.image2text.address")
-		conn, err = grpc.Dial(image2textAddress, grpc.WithInsecure(), grpc.WithBlock())
-		if err != nil {
-			log.Fatal(err)
-		}
+		image2textClient = image2text.NewITTClient(logger, image2textAddress)
 
-		logger.Info("connected to image2text")
-		image2textClient := pb.NewImageCaptioningClient(conn)
+		text2speechUrl := vp.GetString("python.voice2text.url")
+		text2speechApiKey := vp.GetString("python.voice2text.apiKey")
+		text2speechClient = text2speech.NewTTSClient(logger, text2speechUrl, text2speechApiKey)
 
-		pythonCl = pythonClient.NewPythonClient(logger, voice2textClient, image2textClient)
+		en2ruUrl := vp.GetString("python.en2ru.url")
+		en2ruClient = en2ru.NewEnToRuClient(logger, en2ruUrl)
 	}
 
 	tokenManager, err := auth.NewManager(vp.GetString("auth.secret"))
@@ -111,12 +105,14 @@ func NewHandler(logger *logrus.Logger) *Handler {
 
 	return &Handler{
 		logger:       logger.WithField("component", "handler"),
-		pythonClient: pythonCl,
 		repo:         repos,
 		hasher:       hash.NewSHA256Hasher(vp.GetString("auth.salt")),
 		tokenManager: tokenManager,
 		redisClient:  redisClient,
 		mediaService: ffmpeg.NewMediaService(PathForMedia, logger),
+		ittClient:    image2textClient,
+		ttsClient:    text2speechClient,
+		en2ruClient:  en2ruClient,
 	}
 }
 
