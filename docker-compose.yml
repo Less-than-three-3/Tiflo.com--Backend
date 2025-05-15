@@ -51,10 +51,8 @@ services:
       - ${MEDIA}:/media
 
   # tiflocom-itt:
+  #   image: tiflocom-itt
   #   container_name: tiflocom-itt
-  #   build:
-  #     context: ${ML_REPO}
-  #     dockerfile: Dockerfile
-  #   command: python server.py
   #   ports:
-  #     - 5000:5000
+  #     - "5000:5000"
+  #   restart: unless-stopped

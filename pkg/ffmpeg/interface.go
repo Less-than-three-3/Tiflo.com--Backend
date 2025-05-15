@@ -18,6 +18,7 @@ type MediaService interface {
 
 	GetAudioFromVideo(filename string, extension string) error
 	ExtractFrame(videoPath string, timestamp string) (string, error)
+	ConvertWebmToWav(inputPath, outputPath string) error
 }
 
 type MediaServiceImpl struct {

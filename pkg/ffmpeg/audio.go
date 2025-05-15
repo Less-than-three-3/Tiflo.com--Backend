@@ -224,3 +224,15 @@ func (s *MediaServiceImpl) ConcatAudio(audioParts []model.AudioPart) (string, er
 
 	return concatAudio.String() + ".wav", nil
 }
+
+func (s *MediaServiceImpl) ConvertWebmToWav(inputPath, outputPath string) error {
+    cmd := exec.Command("ffmpeg",
+        "-i", inputPath,
+        "-acodec", "pcm_s16le",
+        "-ar", "44100",
+        "-ac", "1",
+        outputPath,
+    )
+    cmd.Stderr = os.Stderr
+    return cmd.Run()
+}

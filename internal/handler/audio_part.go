@@ -1,11 +1,15 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sort"
 	"tiflo/model"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // DeleteAudioPart godoc
@@ -205,4 +209,71 @@ func (h *Handler) ChangeCommentText(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"message": "successfully changed"})
+}
+
+func (h *Handler) UploadAudio(context *gin.Context) {
+	h.logger.Info("UploadAudio")
+
+	// Получаем файл из формы
+	file, err := context.FormFile("voice")
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to get audio file: " + err.Error(),
+		})
+		return
+	}
+
+	// Создаем папку для сохранения, если не существует
+	uploadDir := "/media"
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create upload directory: " + err.Error(),
+		})
+		return
+	}
+
+	// Генерируем уникальное имя файла
+	ext := filepath.Ext(file.Filename)
+	filename := uuid.New().String()
+	fullFilename := filename + ext
+	filePath := filepath.Join(uploadDir, fullFilename)
+
+	// Сохраняем файл
+	src, err := file.Open()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to open uploaded file: " + err.Error(),
+		})
+		return
+	}
+	defer src.Close()
+
+	out, err := os.Create(filePath)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create file on server: " + err.Error(),
+		})
+		return
+	}
+	defer out.Close()
+
+	if _, err := io.Copy(out, src); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to save file as webm: " + err.Error(),
+		})
+		return
+	}
+
+	err = h.mediaService.ConvertWebmToWav(fullFilename, filename + ".wav")
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to save file as wav: " + err.Error(),
+		})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{
+		"message":  "Audio file uploaded successfully",
+		"filepath": filePath,
+	})
 }
