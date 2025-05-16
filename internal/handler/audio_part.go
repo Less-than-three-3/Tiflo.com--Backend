@@ -264,7 +264,11 @@ func (h *Handler) UploadAudio(context *gin.Context) {
 		return
 	}
 
-	err = h.mediaService.ConvertWebmToWav(fullFilename, filename + ".wav")
+	h.logger.Info("WEBM file successfully saved")
+
+	wavFilename := filename + ".wav"
+	wavFilepath := uploadDir + "/" + wavFilename
+	err = h.mediaService.ConvertWebmToWav(filePath, wavFilepath)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to save file as wav: " + err.Error(),
@@ -274,6 +278,6 @@ func (h *Handler) UploadAudio(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{
 		"message":  "Audio file uploaded successfully",
-		"filepath": filePath,
+		"filepath": wavFilename,
 	})
 }

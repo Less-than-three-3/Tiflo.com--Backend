@@ -61,6 +61,7 @@ func (c *ImageToTextClient) ImageToText(context context.Context, filepath string
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 	}
+	
 	c.logger.Info("NewRequest")
 	req, err := http.NewRequest("POST", c.host, body)
 	if err != nil {
